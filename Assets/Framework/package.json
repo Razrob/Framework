@@ -1,0 +1,15 @@
+{
+  "name": "com.razrob.framework",
+  "displayName": "Framework",
+  "version": "0.1",
+  "unity": "2020.3.25f1",
+  "description": "ECS Framework",
+  "keywords": [ "Framework", "ECS" ],
+  "category": "frameworks",
+  "dependencies": {},
+  "samples": {},
+  "author": {
+    "name": "Oleg Kravchenko",
+    "url": "https://github.com/razrob"
+  }
+}

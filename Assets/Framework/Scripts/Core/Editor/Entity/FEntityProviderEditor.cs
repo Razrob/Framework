@@ -19,6 +19,7 @@ namespace Framework.Core.Editor
 
         private const float AppendButtonHeigth = 35f;
         private const float AppendButtonWidth = 230f;
+        private const string EntityBinderName = "_entityBinders";
         private const string ComponentFieldName = "_component";
         private const string ComponentProvidersArrayName = "_componentProviders";
         private const string ComponentTypeString = "_componentType";
@@ -40,6 +41,8 @@ namespace Framework.Core.Editor
             SerializedProperty componentProvidersArrayProperty = serializedObject.FindProperty(ComponentProvidersArrayName);
             CutList(ref _showedElements, componentProvidersArrayProperty.arraySize, true);
 
+            EditorGUILayout.PropertyField(serializedObject.FindProperty(EntityBinderName));
+
             for (int i = 0; i < componentProvidersArrayProperty.arraySize; i++)
             {
                 SerializedProperty arrayElement = componentProvidersArrayProperty.GetArrayElementAtIndex(i);
@@ -57,6 +60,7 @@ namespace Framework.Core.Editor
 
                 EditorGUILayout.EndFoldoutHeaderGroup();
             }
+
 
             DrawAppendButton(); 
 
@@ -131,6 +135,9 @@ namespace Framework.Core.Editor
         {
             DropDownTypesWindow dropDownTypesWindow = EditorWindow.GetWindow<DropDownTypesWindow>();
 
+            dropDownTypesWindow.Initialize(rect, _subTypesFinder.SubTypes);
+            dropDownTypesWindow.SetExcludedValues(GetAddedComponentsProviders()?.Select(componentProvider => componentProvider.ComponentType));
+
             dropDownTypesWindow.OnTypeSelect += type =>
             {
                 if (ContainsComponent(type))
@@ -151,9 +158,6 @@ namespace Framework.Core.Editor
 
                 dropDownTypesWindow.Close();
             };
-
-            dropDownTypesWindow.Initialize(rect, _subTypesFinder.SubTypes);
-            dropDownTypesWindow.SetExcludedValues(GetAddedComponentsProviders()?.Select(componentProvider => componentProvider.ComponentType));
         }
 
         private void CutList<T>(ref List<T> list, int targetLength, T defaultValue = default)

@@ -18,18 +18,18 @@ public class TestSystem1 : FSystemFoundation
         //FrameworkCommander.DestroyFEntity(_movementComponents[0].AttachedEntity);
     }
 
-    //[Executable(-110)]
-    //protected override void OnBegin()
-    //{
-    //    Debug.Log("Begin System1");
-    //}
-
-    [Executable]
-    protected override void OnUpdate()
+    [Executable(-110)]
+    protected override void OnBegin()
     {
-        foreach (MovementComponent movementComponent in _movementComponents)
-            movementComponent.Transform.position += Vector3.forward * Time.deltaTime;
+        //FrameworkCommander.DestroyFEntity(_movementComponents[0].AttachedEntity, false);
     }
+
+    //[Executable]
+    //protected override void OnUpdate()
+    //{
+    //    foreach (MovementComponent movementComponent in _movementComponents)
+    //        movementComponent.Transform.position += Vector3.forward * Time.deltaTime;
+    //}
 
     //[Executable]
     //protected override void OnDisable()

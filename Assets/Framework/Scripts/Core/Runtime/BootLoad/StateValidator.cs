@@ -26,9 +26,9 @@ namespace Framework.Core.Runtime
 
         private void ValidateAttribute(SystemData systemData)
         {
-            if(systemData.SystemExecuteData.FrameworkSystemAttribute.AttachedStates.Count != _statesIndexes.Count)
+            if(_mainStateType.GetEnumValues().Length != _statesIndexes.Count)
                 ThrowException(systemData.SystemType);
-
+            
             foreach (int systemStateIndex in systemData.SystemExecuteData.FrameworkSystemAttribute.AttachedStates)
                 if (!_statesIndexes.Contains(systemStateIndex))
                     ThrowException(systemData.SystemType);

@@ -15,8 +15,13 @@ namespace Framework.Core.Runtime
         public static void DestroyFEntity(FEntity entity, bool destroyGameObjectAlso = true)
         {
             LoadElementAdapter<FEntityRegister>.Instance.UnregisterFEntity(entity);
-            
-            if(destroyGameObjectAlso)
+
+            Component entityBinder = (Component)entity.AttachedGameObject.GetComponent<IEntityBinder>();
+
+            if (entityBinder != null)
+                UnityEngine.Object.Destroy(entityBinder);
+
+            if (destroyGameObjectAlso)
                 UnityEngine.Object.Destroy(entity.AttachedGameObject);
         }
 

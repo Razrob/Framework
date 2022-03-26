@@ -20,6 +20,15 @@ namespace Framework.Core.Runtime
             FEntity entity = new FEntity(entityProvider.ComponentProviders, entityProvider.gameObject);
             FieldInfo attachedFEntityField = FComponentsFieldsExtractor.GetAttachedFEntityFieldInfo();
 
+            foreach (Type binderType in entityProvider.BinderTypes)
+            {
+                if (binderType is null)
+                    continue;
+
+                IEntityBinder entityBinder = (IEntityBinder)entityProvider.gameObject.AddComponent(binderType);
+                entityBinder.BindEntity(entity);
+            }
+
             entity.OnFComponentAdd += _componentsRepository.AddFComponent;
             entity.OnFComponentRemove += _componentsRepository.RemoveFComponent;
 
@@ -38,7 +47,7 @@ namespace Framework.Core.Runtime
         {
             entity.OnFComponentAdd -= _componentsRepository.AddFComponent;
             entity.OnFComponentRemove -= _componentsRepository.RemoveFComponent;
-            
+
             foreach (Type componentType in entity.FComponents.Keys)
             {
                 FComponent component = entity.FComponents[componentType];

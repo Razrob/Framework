@@ -30,7 +30,10 @@ namespace Framework.Core.Runtime
             if (baseType is null)
                 throw new NullReferenceException();
 
-            return assembly.GetTypes().Where(type => type.IsSubclassOf(baseType) && !type.IsAbstract).ToArray();
+            if(baseType.IsClass)
+                return assembly.GetTypes().Where(type => type.IsSubclassOf(baseType) && !type.IsAbstract).ToArray();
+            else
+                return assembly.GetTypes().Where(type => type.GetInterface(baseType.ToString()) != null && !type.IsAbstract).ToArray();
         }
     }
 }

@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace Framework.Core.Editor
 {
-    public abstract class DropDownWindowBase<T> : EditorWindow
+    public abstract class DropDownWindowBase<T> : EditorWindow where T : class
     {
         private Rect _rect;
         private Vector2 _size;
@@ -20,15 +20,22 @@ namespace Framework.Core.Editor
         protected abstract float FieldHeight { get; }
         protected abstract float SearchAreaHeight { get; }
 
+        private bool _allowUndefined;
+
         public event Action<T> OnTypeSelect;
 
         private string _findText;
 
         private int _lastSuitableValuesCount;
 
-        public void Initialize(Rect rect, IReadOnlyList<T> dropDownValues)
+        public void Initialize(Rect rect, IReadOnlyList<T> dropDownValues, bool allowUndefined = false)
         {
+            OnTypeSelect = null;
+
+            _allowUndefined = allowUndefined;
+
             _dropDownValues = dropDownValues;
+
             _size.x = rect.width;
             _rect = rect;
 
@@ -70,6 +77,10 @@ namespace Framework.Core.Editor
             }
 
             EditorGUILayout.Space(7.5f);
+
+            if (_allowUndefined)
+                if (GUILayout.Button(new GUIContent("Undefined"), CustomEditorStyles.GetDropDownListElementsStyle(FieldHeight)))
+                    OnTypeSelect?.Invoke(null);
 
             foreach (T value in suitableValues)
             {

@@ -5,9 +5,9 @@ using System;
 
 namespace Framework.Core.Runtime
 {
-    [Serializable]
-    public abstract class FComponent
+    public interface IEntityBinder
     {
-        public readonly FEntity AttachedEntity;
+        public FEntity BindedEntity { get; }
+        public void BindEntity(FEntity entity);
     }
-} 
+}

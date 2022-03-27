@@ -28,7 +28,10 @@ namespace Framework.Core.Runtime
                 _components.Add(componentProvider.ComponentType, componentProvider.Component);
 
             foreach (Type binderType in entityProvider.BindersTypes)
+            {
                 _entityBinders.Add(binderType, (IEntityBinder)AttachedGameObject.AddComponent(binderType));
+                _entityBinders[binderType].BindEntity(this);
+            }
         }
 
         public TComponent GetFComponent<TComponent>() where TComponent : FComponent

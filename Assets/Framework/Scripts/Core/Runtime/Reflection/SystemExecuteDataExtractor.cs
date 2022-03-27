@@ -16,12 +16,12 @@ namespace Framework.Core.Runtime
             if (!systemType.IsSubclassOf(typeof(FSystemFoundation)))
                 throw new ArgumentException("Incorrect system type");
 
-            string[] executableMethodsNames = Enum.GetNames(typeof(ExecutableMethodID));
+            string[] executableMethodsNames = Enum.GetNames(typeof(ExecutableSystemMethodID));
 
             SystemExecuteData systemExecuteData = new SystemExecuteData();
             systemExecuteData.FrameworkSystemAttribute = GetSystemAttribute(systemType);
 
-            List<MethodData> methodsData = new List<MethodData>();
+            List<SystemMethodData> methodsData = new List<SystemMethodData>();
 
             foreach (MethodInfo methodInfo in systemType.GetMethods(ExecutableMethodsFlag))
             {
@@ -31,7 +31,7 @@ namespace Framework.Core.Runtime
                 ExecutableAttribute executableAttribute = methodInfo.GetCustomAttribute<ExecutableAttribute>();
 
                 if (executableAttribute != null && executableAttribute.Execute)
-                    methodsData.Add(new MethodData(methodInfo, executableAttribute));
+                    methodsData.Add(new SystemMethodData(methodInfo, executableAttribute));
             }
 
             systemExecuteData.MethodsData = methodsData;

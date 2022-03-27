@@ -31,7 +31,7 @@ namespace Framework.Core.Editor
             if(_showedElements is null) 
                 _showedElements = new List<bool>();
 
-            _subTypesFinder = new SubTypesFinder(typeof(FComponent), Assembly.GetAssembly(typeof(FComponent)));
+            _subTypesFinder = new SubTypesFinder(new Type[] { typeof(FComponent) }, Assembly.GetAssembly(typeof(FComponent)));
         }
 
         public override void OnInspectorGUI()
@@ -87,8 +87,14 @@ namespace Framework.Core.Editor
 
         private FieldInfo[] GetComponentFields(Type type)
         {
-            return type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
-                .Where(field => field.GetCustomAttribute<SerializeField>() != null).ToArray();
+            IEnumerable<FieldInfo> fieldInfos = type.GetFields(
+                BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly)
+                .Where(field => field.GetCustomAttribute<SerializeField>() != null);
+
+            if (type.BaseType == typeof(FComponent))
+                return fieldInfos.ToArray();
+
+            return fieldInfos.Concat(GetComponentFields(type.BaseType)).ToArray();
         }
 
         private void DrawComponentFields(FieldInfo[] fieldsInfo, SerializedProperty component)

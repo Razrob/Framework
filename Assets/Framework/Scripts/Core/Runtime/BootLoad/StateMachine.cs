@@ -19,6 +19,7 @@ namespace Framework.Core.Runtime
         public StateMachine(StatesPreset statesPreset)
         {
             _statesPreset = statesPreset;
+            CurrentState = _statesPreset.StatesIndexes[0];
         }
 
         public void SetState(Enum stateEnum)

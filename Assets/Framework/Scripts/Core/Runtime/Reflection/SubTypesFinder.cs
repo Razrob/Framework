@@ -1,39 +1,41 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using UnityEngine;
 
 namespace Framework.Core.Runtime
 {
     public class SubTypesFinder
     {
+        private IEnumerable<Type> _baseTypes;
         public IReadOnlyList<Type> SubTypes { get; private set; }
 
-        private Type _baseType;
-
-        public SubTypesFinder(Type baseType)
+        public SubTypesFinder(IEnumerable<Type> baseTypes)
         {
-            _baseType = baseType;
-            SubTypes = FindTypes(_baseType.Assembly, baseType);
+            _baseTypes = baseTypes;
+            SubTypes = FindTypes(baseTypes, _baseTypes.ElementAt(0).Assembly);
         }
 
-        public SubTypesFinder(Type baseType, Assembly targetAssembly)
+        public SubTypesFinder(IEnumerable<Type> baseTypes, Assembly targetAssembly)
         {
-            _baseType = baseType;
-            SubTypes = FindTypes(targetAssembly, baseType);
+            _baseTypes = baseTypes;
+            SubTypes = FindTypes(baseTypes, targetAssembly);
         }
 
-        public static Type[] FindTypes(Assembly assembly, Type baseType)
+        public static Type[] FindTypes(IEnumerable<Type> baseTypes, Assembly assembly)
         {
-            if (baseType is null)
+            if (baseTypes is null)
                 throw new NullReferenceException();
 
-            if(baseType.IsClass)
-                return assembly.GetTypes().Where(type => type.IsSubclassOf(baseType) && !type.IsAbstract).ToArray();
-            else
-                return assembly.GetTypes().Where(type => type.GetInterface(baseType.ToString()) != null && !type.IsAbstract).ToArray();
+            return assembly.GetTypes().Where(type =>
+            {
+                return baseTypes.All(baseType =>
+                {
+                    if (baseType.IsClass)
+                        return type.IsSubclassOf(baseType);
+                    else return type.GetInterface(baseType.ToString()) != null;
+                });
+            }).ToArray();
         }
     }
 }

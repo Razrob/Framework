@@ -9,10 +9,12 @@ namespace Framework.Core.Runtime
     public class FEntityProvider : MonoBehaviour
     {
         [SerializeReference] private FComponentProvider[] _componentProviders;
-        [SerializeField] [SubTypesFilter(typeof(IEntityBinder), true)] private SerializableType[] _entityBinders;
+        
+        [SubTypesFilter(new Type[] { typeof(IEntityBinder), typeof(MonoBehaviour) }, true)]
+        [SerializeField] private SerializableType[] _entityBinders;
 
         public IReadOnlyList<FComponentProvider> ComponentProviders => _componentProviders;
-        public IEnumerable<Type> BinderTypes => _entityBinders.Select(binder => binder.Type);
+        public IEnumerable<Type> BindersTypes => _entityBinders.Select(binder => binder.Type);
 
         private void Awake()
         {

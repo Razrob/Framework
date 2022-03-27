@@ -9,7 +9,8 @@ namespace Framework.Core.Runtime
     [DefaultExecutionOrder(-500)]
     public class BootLoader : MonoBehaviour, IBootLoadElement
     {
-        [SerializeField] [SubTypesFilter(typeof(Enum), typeof(BootLoader))] private SerializableType _statesEnum;
+        [SerializeField][SubTypesFilter(new Type[] { typeof(Enum) }, typeof(BootLoader))] private SerializableType _statesEnum;
+        [SerializeField] private UnityEngine.Object[] _injections;
 
         private StatesPreset _statesPreset;
         private SystemExecuteRepository _systemExecuteRepository;
@@ -20,6 +21,7 @@ namespace Framework.Core.Runtime
         private MonoEventsTransmitter _transmitter;
         private SystemLauncher _systemLauncher;
         private InternalModelInjector _modelInjector;
+        private FieldsInjector _fieldsInjector;
 
         private FEntityRegister _entityRegister;
         private ComponentsSelectorsInjector _componentInjector;
@@ -44,6 +46,7 @@ namespace Framework.Core.Runtime
         private void Start()
         {
             _modelInjector = LoadElementAdapter<InternalModelInjector>.Initialize(new InternalModelInjector());
+            _fieldsInjector = LoadElementAdapter<FieldsInjector>.Initialize(new FieldsInjector(_injections));
 
             Validate();
         }

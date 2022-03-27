@@ -159,6 +159,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _statesEnum:
     _typeName: State
+  _injections: []
 --- !u!4 &1292421538
 Transform:
   m_ObjectHideFlags: 0
@@ -284,7 +285,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8296130790843035665, guid: 0a8893255c3e38e40a1f835830d2a43c, type: 3}
       propertyPath: _entityBinders.Array.data[0]._typeName
-      value: 
+      value: EntityBinder
       objectReference: {fileID: 0}
     - target: {fileID: 8296130790843035665, guid: 0a8893255c3e38e40a1f835830d2a43c, type: 3}
       propertyPath: _entityBinders.Array.data[1]._typeName

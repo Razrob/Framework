@@ -11,8 +11,8 @@ namespace Framework.Core.Runtime
         private readonly LinkedList<SystemModule> _registeredModules;
         private readonly LinkedList<FSystemFoundation> _registeredSystems;
 
-        private readonly ExecutableMethodID[] ExecutableMethodsID;
-        private readonly ExecutableMethodID[] DisablableExecutableMethodsID;
+        private readonly ExecutableSystemMethodID[] ExecutableMethodsID;
+        private readonly ExecutableSystemMethodID[] DisablableExecutableMethodsID;
 
         private readonly SystemExecuteRepository _systemExecuteRepository;
 
@@ -27,17 +27,17 @@ namespace Framework.Core.Runtime
             _registeredModules = new LinkedList<SystemModule>();
             _registeredSystems = new LinkedList<FSystemFoundation>();
 
-            Array methodsID = Enum.GetValues(typeof(ExecutableMethodID));
-            ExecutableMethodsID = new ExecutableMethodID[methodsID.Length];
+            Array methodsID = Enum.GetValues(typeof(ExecutableSystemMethodID));
+            ExecutableMethodsID = new ExecutableSystemMethodID[methodsID.Length];
 
             for (int i = 0; i < ExecutableMethodsID.Length; i++)
-                ExecutableMethodsID[i] = (ExecutableMethodID)methodsID.GetValue(i);
+                ExecutableMethodsID[i] = (ExecutableSystemMethodID)methodsID.GetValue(i);
 
-            DisablableExecutableMethodsID = new ExecutableMethodID[] 
+            DisablableExecutableMethodsID = new ExecutableSystemMethodID[] 
             { 
-                ExecutableMethodID.OnBegin, 
-                ExecutableMethodID.OnUpdate, 
-                ExecutableMethodID.OnFixedUpdate 
+                ExecutableSystemMethodID.OnBegin, 
+                ExecutableSystemMethodID.OnUpdate, 
+                ExecutableSystemMethodID.OnFixedUpdate 
             };
 
             systemExecuteRepository = _systemExecuteRepository = new SystemExecuteRepository(statesPreset.StatesIndexes);
@@ -87,7 +87,7 @@ namespace Framework.Core.Runtime
         {
             foreach(SystemData data in systemModule.SystemsData)
             {
-                foreach (MethodData methodData in data.SystemExecuteData.MethodsData)
+                foreach (SystemMethodData methodData in data.SystemExecuteData.MethodsData)
                 {
                     ExecuteDelegate @delegate = methodData.MethodInfo.CreateDelegate(typeof(ExecuteDelegate), data.System) as ExecuteDelegate;
 
@@ -95,24 +95,24 @@ namespace Framework.Core.Runtime
                     {
                         foreach (int stateIndex in data.SystemExecuteData.FrameworkSystemAttribute.AttachedStates)
                         {
-                            _systemExecuteRepository.GetStatedExecuteHandler(methodData.MethodInfo.Name.ToEnum<ExecutableMethodID>(), stateIndex)
+                            _systemExecuteRepository.GetStatedExecuteHandler(methodData.MethodInfo.Name.ToEnum<ExecutableSystemMethodID>(), stateIndex)
                                 .AddDelegate(@delegate, methodData.ExecutableAttribute.ExecutionOrder);
                         }
                     }
                     else
                     {
-                        _systemExecuteRepository.GetNotStatedExecuteHandler(methodData.MethodInfo.Name.ToEnum<ExecutableMethodID>())
+                        _systemExecuteRepository.GetNotStatedExecuteHandler(methodData.MethodInfo.Name.ToEnum<ExecutableSystemMethodID>())
                                 .AddDelegate(@delegate, methodData.ExecutableAttribute.ExecutionOrder);
                     }
                 }
             }
         }
 
-        private void RemoveSystemsExecuteData(SystemModule systemModule, ExecutableMethodID[] methodsID)
+        private void RemoveSystemsExecuteData(SystemModule systemModule, ExecutableSystemMethodID[] methodsID)
         {
             foreach (SystemData data in systemModule.SystemsData)
             {
-                foreach (ExecutableMethodID methodID in methodsID)
+                foreach (ExecutableSystemMethodID methodID in methodsID)
                     foreach (int stateIndex in data.SystemExecuteData.FrameworkSystemAttribute.AttachedStates)
                         _systemExecuteRepository.GetStatedExecuteHandler(methodID, stateIndex).RemoveTarget(data.System);
             }

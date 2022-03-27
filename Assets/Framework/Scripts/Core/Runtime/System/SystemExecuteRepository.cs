@@ -7,16 +7,16 @@ namespace Framework.Core.Runtime
 {
     public class SystemExecuteRepository
     {
-        private readonly Dictionary<ExecutableMethodID, Dictionary<int, OrderedExecuteHandler>> _orderedStatedExecuteHandlers;
-        private readonly Dictionary<ExecutableMethodID, OrderedExecuteHandler> _orderedNotStatedExecuteHandlers;
+        private readonly Dictionary<ExecutableSystemMethodID, Dictionary<int, OrderedExecuteHandler>> _orderedStatedExecuteHandlers;
+        private readonly Dictionary<ExecutableSystemMethodID, OrderedExecuteHandler> _orderedNotStatedExecuteHandlers;
 
         public SystemExecuteRepository(IReadOnlyList<int> statesIDs)
         {
-             Array methods = Enum.GetValues(typeof(ExecutableMethodID));
-            _orderedStatedExecuteHandlers = new Dictionary<ExecutableMethodID, Dictionary<int, OrderedExecuteHandler>>(methods.Length);
-            _orderedNotStatedExecuteHandlers = new Dictionary<ExecutableMethodID, OrderedExecuteHandler>(methods.Length);
+             Array methods = Enum.GetValues(typeof(ExecutableSystemMethodID));
+            _orderedStatedExecuteHandlers = new Dictionary<ExecutableSystemMethodID, Dictionary<int, OrderedExecuteHandler>>(methods.Length);
+            _orderedNotStatedExecuteHandlers = new Dictionary<ExecutableSystemMethodID, OrderedExecuteHandler>(methods.Length);
 
-            foreach (ExecutableMethodID executableMethod in methods)
+            foreach (ExecutableSystemMethodID executableMethod in methods)
             {
                 Dictionary<int, OrderedExecuteHandler> states = new Dictionary<int, OrderedExecuteHandler>(statesIDs.Count);
 
@@ -28,13 +28,19 @@ namespace Framework.Core.Runtime
             }
         }
 
-        public OrderedExecuteHandler GetStatedExecuteHandler(ExecutableMethodID methodID, int stateID)
+        public OrderedExecuteHandler GetStatedExecuteHandler(ExecutableSystemMethodID methodID, int stateID)
         {
+            if (!_orderedStatedExecuteHandlers.ContainsKey(methodID))
+                return null;
+
             return _orderedStatedExecuteHandlers[methodID][stateID];
         }
 
-        public OrderedExecuteHandler GetNotStatedExecuteHandler(ExecutableMethodID methodID)
+        public OrderedExecuteHandler GetNotStatedExecuteHandler(ExecutableSystemMethodID methodID)
         {
+            if (!_orderedNotStatedExecuteHandlers.ContainsKey(methodID))
+                return null;
+
             return _orderedNotStatedExecuteHandlers[methodID];
         }
     }

@@ -11,8 +11,13 @@ namespace Framework.Core.Runtime
 
         public static IEnumerable<FieldInfo> GetInternalModelData(Type systemType)
         {
-            return systemType.GetFields(ModelFlags)
+            IEnumerable<FieldInfo> fields = systemType.GetFields(ModelFlags)
                 .Where(field => field.GetCustomAttribute(typeof(InternalModelAttribute)) != null);
+
+            if (systemType.BaseType == typeof(FSystemFoundation))
+                return fields;
+
+            return fields.Concat(GetInternalModelData(systemType.BaseType));
         }
     }
 }

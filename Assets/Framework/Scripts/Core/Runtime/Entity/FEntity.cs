@@ -1,27 +1,34 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using System.Linq;
 
 namespace Framework.Core.Runtime
 {
     public class FEntity
     {
         private readonly Dictionary<Type, FComponent> _components;
+        private readonly Dictionary<Type, IEntityBinder> _entityBinders;
+
         public IReadOnlyDictionary<Type, FComponent> FComponents => _components;
+        public IReadOnlyDictionary<Type, IEntityBinder> EntityBinders => _entityBinders;
 
         public readonly GameObject AttachedGameObject;
 
         public event FrameworkEvent<FComponent, Type> OnFComponentAdd;
         public event FrameworkEvent<FComponent, Type> OnFComponentRemove;
 
-        public FEntity(IReadOnlyList<FComponentProvider> componentProviders, GameObject attachedGameObject)
+        public FEntity(FEntityProvider entityProvider)
         {
-            AttachedGameObject = attachedGameObject;
-            _components = new Dictionary<Type, FComponent>(componentProviders.Count);
+            AttachedGameObject = entityProvider.gameObject;
+            _components = new Dictionary<Type, FComponent>(entityProvider.ComponentProviders.Count);
+            _entityBinders = new Dictionary<Type, IEntityBinder>(entityProvider.BindersTypes.Count());
 
-            foreach (FComponentProvider componentProvider in componentProviders)
+            foreach (FComponentProvider componentProvider in entityProvider.ComponentProviders)
                 _components.Add(componentProvider.ComponentType, componentProvider.Component);
+
+            foreach (Type binderType in entityProvider.BindersTypes)
+                _entityBinders.Add(binderType, (IEntityBinder)AttachedGameObject.AddComponent(binderType));
         }
 
         public TComponent GetFComponent<TComponent>() where TComponent : FComponent

@@ -6,15 +6,15 @@ using System.Reflection;
 
 namespace Framework.Core.Runtime
 {
-    public class SystemLauncher : IBootLoadElement, IEventReceiver<ExecutableMethodID>
+    public class SystemLauncher : IBootLoadElement, IEventReceiver<ExecutableSystemMethodID>
     {
         private readonly SystemExecuteRepository _systemExecuteRepository;
         private readonly StateMachine _stateMachine;
         private readonly SystemRegister _systemRegister;
         private readonly MonoEventsTransmitter _transmitter;
 
-        private readonly ExecutableMethodID[] _initializeMethodsEnabled;
-        private readonly ExecutableMethodID[] _initializeMethodsDisabed;
+        private readonly ExecutableSystemMethodID[] _initializeMethodsEnabled;
+        private readonly ExecutableSystemMethodID[] _initializeMethodsDisabed;
 
         public SystemLauncher(SystemExecuteRepository systemExecuteRepository)
         {
@@ -23,17 +23,17 @@ namespace Framework.Core.Runtime
             _systemRegister = LoadElementAdapter<SystemRegister>.Instance;
             _transmitter = LoadElementAdapter<MonoEventsTransmitter>.Instance;
 
-            _initializeMethodsEnabled = new ExecutableMethodID[] 
+            _initializeMethodsEnabled = new ExecutableSystemMethodID[] 
             { 
-                ExecutableMethodID.OnInitialize,
-                ExecutableMethodID.OnEnable,
-                ExecutableMethodID.OnBegin, 
+                ExecutableSystemMethodID.OnInitialize,
+                ExecutableSystemMethodID.OnEnable,
+                ExecutableSystemMethodID.OnBegin, 
             };
 
-            _initializeMethodsDisabed = new ExecutableMethodID[] 
+            _initializeMethodsDisabed = new ExecutableSystemMethodID[] 
             { 
-                ExecutableMethodID.OnInitialize, 
-                ExecutableMethodID.OnBegin,
+                ExecutableSystemMethodID.OnInitialize, 
+                ExecutableSystemMethodID.OnBegin,
             };
 
             _systemRegister.OnModuleRegister += RegisterModuleCallbacks;
@@ -48,7 +48,7 @@ namespace Framework.Core.Runtime
             _systemRegister.OnModuleRegister += CallStartModuleEvents;
         }
 
-        public void OnReceive(ExecutableMethodID arg)
+        public void OnReceive(ExecutableSystemMethodID arg)
         {
             ExecuteCommon(arg, _stateMachine.CurrentState);
         }
@@ -69,38 +69,38 @@ namespace Framework.Core.Runtime
 
         private void CallStartModuleEvents(SystemModule systemModule)
         {
-            ExecutableMethodID[] methods = systemModule.gameObject.activeSelf ?
+            ExecutableSystemMethodID[] methods = systemModule.gameObject.activeSelf ?
                 _initializeMethodsEnabled : _initializeMethodsDisabed;
 
-            foreach (ExecutableMethodID methodID in methods)
+            foreach (ExecutableSystemMethodID methodID in methods)
                 ExecuteSpecific(methodID, _stateMachine.CurrentState, systemModule.Systems);
         }
 
         private void OnModuleEnable(SystemModule systemModule)
         {
-            ExecuteSpecific(ExecutableMethodID.OnEnable, _stateMachine.CurrentState, systemModule.Systems);
+            ExecuteSpecific(ExecutableSystemMethodID.OnEnable, _stateMachine.CurrentState, systemModule.Systems);
         }
 
         private void OnModuleDisable(SystemModule systemModule)
         {
-            ExecuteSpecific(ExecutableMethodID.OnDisable, _stateMachine.CurrentState, systemModule.Systems);
+            ExecuteSpecific(ExecutableSystemMethodID.OnDisable, _stateMachine.CurrentState, systemModule.Systems);
         }
 
         private void OnModuleDestroy(SystemModule systemModule)
         {
-            ExecuteSpecific(ExecutableMethodID.OnDestroy, _stateMachine.CurrentState, systemModule.Systems);
+            ExecuteSpecific(ExecutableSystemMethodID.OnDestroy, _stateMachine.CurrentState, systemModule.Systems);
         }
 
-        private void ExecuteCommon(ExecutableMethodID methodID, int stateIndex)
+        private void ExecuteCommon(ExecutableSystemMethodID methodID, int stateIndex)
         {
-            _systemExecuteRepository.GetStatedExecuteHandler(methodID, stateIndex).Execute();
-            _systemExecuteRepository.GetNotStatedExecuteHandler(methodID).Execute();
+            _systemExecuteRepository.GetStatedExecuteHandler(methodID, stateIndex)?.Execute();
+            _systemExecuteRepository.GetNotStatedExecuteHandler(methodID)?.Execute();
         }
 
-        private void ExecuteSpecific(ExecutableMethodID methodID, int stateIndex, IEnumerable<IExecutable> targets)
+        private void ExecuteSpecific(ExecutableSystemMethodID methodID, int stateIndex, IEnumerable<IExecutable> targets)
         {
-            _systemExecuteRepository.GetStatedExecuteHandler(methodID, stateIndex).ExecuteSpecific(targets);
-            _systemExecuteRepository.GetNotStatedExecuteHandler(methodID).ExecuteSpecific(targets);
+            _systemExecuteRepository.GetStatedExecuteHandler(methodID, stateIndex)?.ExecuteSpecific(targets);
+            _systemExecuteRepository.GetNotStatedExecuteHandler(methodID)?.ExecuteSpecific(targets);
         }
     }
 }

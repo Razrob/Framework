@@ -1,7 +1,7 @@
 
 namespace Framework.Core.Runtime
 {
-    public enum ExecutableMethodID
+    public enum ExecutableSystemMethodID
     {
         OnInitialize,
         OnBegin,

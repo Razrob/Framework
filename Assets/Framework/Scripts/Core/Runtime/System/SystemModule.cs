@@ -9,7 +9,7 @@ namespace Framework.Core.Runtime
 {
     public class SystemModule : MonoBehaviour
     {
-        [SerializeField] [SubTypesFilter(typeof(FSystemFoundation))] private SerializableType[] _attachedSystemsTypes;
+        [SerializeField] [SubTypesFilter(new Type[] { typeof(FSystemFoundation) })] private SerializableType[] _attachedSystemsTypes;
 
         private FSystemFoundation[] _systems;
         private SystemData[] _systemsData;
@@ -38,6 +38,7 @@ namespace Framework.Core.Runtime
             {
                 _systemsData[i] = new SystemData((FSystemFoundation)Activator.CreateInstance(systemsTypes[i]), systemsTypes[i]);
                 _systemsData[i].InternalModelFields = InternalModelExtractor.GetInternalModelData(systemsTypes[i]);
+                _systemsData[i].InjectionsFields = InjectionsExtractor.GetInjectionsData(systemsTypes[i]);
                 _systemsData[i].ComponentSelectorFields = ComponentSelectorExtractor.GetSelectors(systemsTypes[i]);
                 _systemsData[i].SystemExecuteData = SystemExecuteDataExtractor.GetExecuteData(systemsTypes[i]);
 

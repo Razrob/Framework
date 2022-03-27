@@ -1,28 +1,27 @@
-using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 using System;
 using System.Reflection;
+using System.Linq;
 
-namespace Framework.Core.Runtime 
+namespace Framework.Core.Runtime
 {
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
     public class SubTypesFilterAttribute : Attribute
     {
-        public readonly Type BaseType;
+        public readonly IEnumerable<Type> BaseTypes;
         public readonly Assembly Assembly;
         public readonly bool AllowUndefined;
 
-        public SubTypesFilterAttribute(Type baseType, bool allowUndefined = false)
+        public SubTypesFilterAttribute(Type[] baseTypes, bool allowUndefined = false)
         {
-            BaseType = baseType;
-            Assembly = Assembly.GetAssembly(baseType);
+            BaseTypes = baseTypes;
+            Assembly = Assembly.GetAssembly(baseTypes.ElementAt(0));
             AllowUndefined = allowUndefined;
         }
 
-        public SubTypesFilterAttribute(Type baseType, Type assemblyType, bool allowUndefined = false)
+        public SubTypesFilterAttribute(Type[] baseTypes, Type assemblyType, bool allowUndefined = false)
         {
-            BaseType = baseType;
+            BaseTypes = baseTypes;
             Assembly = Assembly.GetAssembly(assemblyType);
             AllowUndefined = allowUndefined;
         }

@@ -17,17 +17,9 @@ namespace Framework.Core.Runtime
 
         public void RegisterFEntity(FEntityProvider entityProvider)
         {
-            FEntity entity = new FEntity(entityProvider.ComponentProviders, entityProvider.gameObject);
+            FEntity entity = new FEntity(entityProvider);
             FieldInfo attachedFEntityField = FComponentsFieldsExtractor.GetAttachedFEntityFieldInfo();
-
-            foreach (Type binderType in entityProvider.BinderTypes)
-            {
-                if (binderType is null)
-                    continue;
-
-                IEntityBinder entityBinder = (IEntityBinder)entityProvider.gameObject.AddComponent(binderType);
-                entityBinder.BindEntity(entity);
-            }
+            MethodInfo onAttachMethodInfo = FComponentsFieldsExtractor.GetExecutableComponentMethodInfo(ExecutableComponentMethodID.OnAttach);
 
             entity.OnFComponentAdd += _componentsRepository.AddFComponent;
             entity.OnFComponentRemove += _componentsRepository.RemoveFComponent;
@@ -38,6 +30,8 @@ namespace Framework.Core.Runtime
                 
                 attachedFEntityField.SetValue(component, entity);
                 _componentsRepository.AddFComponent(component, componentType);
+
+                onAttachMethodInfo.Invoke(component, new object[] { entity }); 
             }
 
             UnityEngine.Object.Destroy(entityProvider);
@@ -47,12 +41,16 @@ namespace Framework.Core.Runtime
         {
             entity.OnFComponentAdd -= _componentsRepository.AddFComponent;
             entity.OnFComponentRemove -= _componentsRepository.RemoveFComponent;
+            
+            MethodInfo onDetachMethodInfo = FComponentsFieldsExtractor.GetExecutableComponentMethodInfo(ExecutableComponentMethodID.OnDetach);
 
             foreach (Type componentType in entity.FComponents.Keys)
             {
                 FComponent component = entity.FComponents[componentType];
 
                 _componentsRepository.RemoveFComponent(component, componentType);
+
+                onDetachMethodInfo.Invoke(component, new object[] { entity });
             }
         }
     }

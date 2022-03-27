@@ -12,5 +12,10 @@ namespace Framework.Core.Runtime
         [SerializeField] public Vector3 CurrentVelocity;
         [SerializeField] public Vector3 CurrentAcceleration;
         [SerializeField] public Transform Transform;
+
+        protected override void OnAttach(FEntity entity)
+        {
+
+        }
     }
 }

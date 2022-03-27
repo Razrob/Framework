@@ -8,16 +8,16 @@ namespace Framework.Core.Runtime
 {
     public struct SystemExecuteData
     {
-        public IEnumerable<MethodData> MethodsData;
+        public IEnumerable<SystemMethodData> MethodsData;
         public FrameworkSystemAttribute FrameworkSystemAttribute;
     }
 
-    public struct MethodData
+    public struct SystemMethodData
     {
         public MethodInfo MethodInfo;
         public ExecutableAttribute ExecutableAttribute;
 
-        public MethodData(MethodInfo methodInfo, ExecutableAttribute executableAttribute)
+        public SystemMethodData(MethodInfo methodInfo, ExecutableAttribute executableAttribute)
         {
             MethodInfo = methodInfo;
             ExecutableAttribute = executableAttribute;

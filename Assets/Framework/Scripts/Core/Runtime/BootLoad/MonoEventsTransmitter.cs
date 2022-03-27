@@ -5,44 +5,44 @@ using System;
 
 namespace Framework.Core.Runtime
 {
-    public class MonoEventsTransmitter : MonoBehaviour, IBootLoadElement, IEventTransmitter<ExecutableMethodID>
+    public class MonoEventsTransmitter : MonoBehaviour, IBootLoadElement, IEventTransmitter<ExecutableSystemMethodID>
     {
-        private readonly LinkedList<IEventReceiver<ExecutableMethodID>> _receivers;
+        private readonly LinkedList<IEventReceiver<ExecutableSystemMethodID>> _receivers;
 
         public event ExecuteDelegate OnInitialize;
 
         public MonoEventsTransmitter()
         {
-            _receivers = new LinkedList<IEventReceiver<ExecutableMethodID>>();
+            _receivers = new LinkedList<IEventReceiver<ExecutableSystemMethodID>>();
         }
 
         private void Start()
         {
-            foreach (IEventReceiver<ExecutableMethodID> receiver in _receivers)
-                receiver.OnReceive(ExecutableMethodID.OnInitialize);
+            foreach (IEventReceiver<ExecutableSystemMethodID> receiver in _receivers)
+                receiver.OnReceive(ExecutableSystemMethodID.OnInitialize);
 
-            foreach (IEventReceiver<ExecutableMethodID> receiver in _receivers)
-                receiver.OnReceive(ExecutableMethodID.OnBegin);
+            foreach (IEventReceiver<ExecutableSystemMethodID> receiver in _receivers)
+                receiver.OnReceive(ExecutableSystemMethodID.OnBegin);
             
             OnInitialize?.Invoke();
         }
 
         private void Update()
         {
-            foreach (IEventReceiver<ExecutableMethodID> receiver in _receivers)
-                receiver.OnReceive(ExecutableMethodID.OnUpdate);
+            foreach (IEventReceiver<ExecutableSystemMethodID> receiver in _receivers)
+                receiver.OnReceive(ExecutableSystemMethodID.OnUpdate);
         }
 
         private void FixedUpdate()
         {
-            foreach (IEventReceiver<ExecutableMethodID> receiver in _receivers)
-                receiver.OnReceive(ExecutableMethodID.OnFixedUpdate);
+            foreach (IEventReceiver<ExecutableSystemMethodID> receiver in _receivers)
+                receiver.OnReceive(ExecutableSystemMethodID.OnFixedUpdate);
         }
 
-        public IDisposable Subscribe(IEventReceiver<ExecutableMethodID> eventReceiver)
+        public IDisposable Subscribe(IEventReceiver<ExecutableSystemMethodID> eventReceiver)
         {
             _receivers.AddLast(eventReceiver);
-            return new UnsubscribeHandler<ExecutableMethodID>(_receivers, eventReceiver);
+            return new UnsubscribeHandler<ExecutableSystemMethodID>(_receivers, eventReceiver);
         }
     }
 }

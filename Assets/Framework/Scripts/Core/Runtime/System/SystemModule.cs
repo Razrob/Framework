@@ -37,7 +37,7 @@ namespace Framework.Core.Runtime
             for (int i = 0; i < systemsTypes.Length; i++)
             {
                 _systemsData[i] = new SystemData((FSystemFoundation)Activator.CreateInstance(systemsTypes[i]), systemsTypes[i]);
-                _systemsData[i].InternalModelFields = InternalModelExtractor.GetInternalModelData(systemsTypes[i]);
+                _systemsData[i].ModelInjectionsFields = InternalModelExtractor.GetInternalModelData(systemsTypes[i]);
                 _systemsData[i].InjectionsFields = InjectionsExtractor.GetInjectionsData(systemsTypes[i]);
                 _systemsData[i].ComponentSelectorFields = ComponentSelectorExtractor.GetSelectors(systemsTypes[i]);
                 _systemsData[i].SystemExecuteData = SystemExecuteDataExtractor.GetExecuteData(systemsTypes[i]);

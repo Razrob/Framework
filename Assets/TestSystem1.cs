@@ -8,7 +8,7 @@ using System.Linq;
 [FrameworkSystem(State.Menu)]
 public class TestSystem1 : FSystemFoundation
 {
-    [InternalModel] private GameData _gameData;
+    [InjectModel] private GameData _gameData;
 
     [InjectSelector] private ComponentSelector<MovementComponent> _movementComponents;
 

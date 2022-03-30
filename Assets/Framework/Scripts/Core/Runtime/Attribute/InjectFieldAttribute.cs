@@ -2,5 +2,5 @@
 
 namespace Framework.Core.Runtime
 {
-    public class InjectAttribute : Attribute { }
+    public class InjectFieldAttribute : Attribute { }
 }

@@ -24,30 +24,11 @@ namespace Framework.Core.Runtime
             _systemRegister.OnModuleUnregister += TryUnloadModel;
         }
 
-        public void SaveModel()
-        {
-            foreach(SystemModule module in _systemRegister.RegisteredModules)
-            {
-                foreach (SystemData data in module.SystemsData)
-                {
-                    foreach(FieldInfo field in data.InternalModelFields)
-                    {
-                        InternalModelAttribute modelAttribute = field.GetCustomAttribute<InternalModelAttribute>();
-
-                        if (!modelAttribute.SaveAllow)
-                            continue;
-
-                        DataSaver.Save(field.GetValue(data.System), FormFileName(field.FieldType), SaveDirectory);
-                    }
-                }
-            }
-        }
-
         private void InjectModel(SystemModule systemModule)
         {
             foreach (SystemData data in systemModule.SystemsData)
             {
-                foreach (FieldInfo field in data.InternalModelFields)
+                foreach (FieldInfo field in data.ModelInjectionsFields)
                 {
                     if (_models.ContainsKey(field.FieldType))
                     {
@@ -75,6 +56,28 @@ namespace Framework.Core.Runtime
         private string FormFileName(Type type)
         {
             return $"InternalData_{type.Name}";
+        }
+
+        public void SaveModel()
+        {
+            Dictionary<Type, object> savedTypes = new Dictionary<Type, object>();
+
+            foreach (SystemModule module in _systemRegister.RegisteredModules)
+            {
+                foreach (SystemData data in module.SystemsData)
+                {
+                    foreach (FieldInfo field in data.ModelInjectionsFields)
+                    {
+                        InternalModelAttribute modelAttribute = field.GetCustomAttribute<InternalModelAttribute>();
+
+                        if (!modelAttribute.SaveAllow || savedTypes.ContainsKey(field.FieldType))
+                            continue;
+
+                        savedTypes.Add(field.FieldType, new object());
+                        DataSaver.Save(field.GetValue(data.System), FormFileName(field.FieldType), SaveDirectory);
+                    }
+                }
+            }
         }
     }
 }

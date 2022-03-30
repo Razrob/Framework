@@ -12,7 +12,7 @@ namespace Framework.Core.Runtime
         public static IEnumerable<FieldInfo> GetInjectionsData(Type systemType)
         {
             IEnumerable<FieldInfo> fields = systemType.GetFields(InjectionFlags)
-                .Where(field => field.GetCustomAttribute(typeof(InjectAttribute)) != null);
+                .Where(field => field.GetCustomAttribute(typeof(InjectFieldAttribute)) != null);
 
             if (systemType.BaseType == typeof(FSystemFoundation))
                 return fields;

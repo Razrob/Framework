@@ -9,7 +9,7 @@ namespace Framework.Core.Runtime
         public readonly FSystemFoundation System;
         public readonly Type SystemType;
         public SystemExecuteData SystemExecuteData;
-        public IEnumerable<FieldInfo> InternalModelFields;
+        public IEnumerable<FieldInfo> ModelInjectionsFields;
         public IEnumerable<FieldInfo> InjectionsFields;
         public IEnumerable<FieldInfo> ComponentSelectorFields;
 
@@ -19,7 +19,7 @@ namespace Framework.Core.Runtime
             SystemType = type;
 
             SystemExecuteData = new SystemExecuteData();
-            InternalModelFields = null;
+            ModelInjectionsFields = null;
             InjectionsFields = null; 
             ComponentSelectorFields = null;
         }

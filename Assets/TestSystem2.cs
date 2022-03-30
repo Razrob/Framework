@@ -7,7 +7,7 @@ using Framework.Core.Runtime;
 [FrameworkSystem(State.Menu)]
 public class TestSystem2 : FSystemFoundation
 {
-    [InternalModel] private GameData _gameData;
+    [InjectModel] private GameData _gameData;
 
     [Executable(-100)]
     protected override void OnBegin()

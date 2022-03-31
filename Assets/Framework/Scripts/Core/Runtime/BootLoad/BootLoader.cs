@@ -40,12 +40,12 @@ namespace Framework.Core.Runtime
             _systemLauncher = LoadElementAdapter<SystemLauncher>.Initialize(new SystemLauncher(_systemExecuteRepository));
 
             _entityRegister = LoadElementAdapter<FEntityRegister>.Initialize(new FEntityRegister(out _componentsRepository));
-            _componentInjector = LoadElementAdapter<ComponentsSelectorsInjector>.Initialize(new ComponentsSelectorsInjector(_componentsRepository));
         }
 
         private void Start()
         {
             _modelInjector = LoadElementAdapter<InternalModelInjector>.Initialize(new InternalModelInjector());
+            _componentInjector = LoadElementAdapter<ComponentsSelectorsInjector>.Initialize(new ComponentsSelectorsInjector(_componentsRepository));
             _fieldsInjector = LoadElementAdapter<FieldsInjector>.Initialize(new FieldsInjector(_injections));
 
             Validate();

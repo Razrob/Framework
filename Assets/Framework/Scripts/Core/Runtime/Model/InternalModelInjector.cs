@@ -12,6 +12,10 @@ namespace Framework.Core.Runtime
 
         private const string SaveDirectory = "/InternalModel";
 
+        public IReadOnlyDictionary<Type, object> Models => _models;
+
+        public event FrameworkDelegate<object> OnModelCreate;
+
         public InternalModelInjector()
         {
             _models = new Dictionary<Type, object>();
@@ -61,6 +65,8 @@ namespace Framework.Core.Runtime
 
                 _models.Add(modelField.FieldType, value);
                 modelField.SetValue(declaredObject, _models[modelField.FieldType]);
+
+                OnModelCreate?.Invoke(value);
             }
         }
 

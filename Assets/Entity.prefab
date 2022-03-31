@@ -96,22 +96,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _componentProviders:
   - id: 0
-  - id: 1
+  _entityBinders: []
   references:
     version: 1
     00000000:
       type: {class: FComponentProvider, ns: Framework.Core.Runtime, asm: Assembly-CSharp}
       data:
         _component:
-          id: 2
+          id: 1
         _componentType: InputComponent
     00000001:
-      type: {class: FComponentProvider, ns: Framework.Core.Runtime, asm: Assembly-CSharp}
-      data:
-        _component:
-          id: 3
-        _componentType: Framework.Core.Runtime.MovementComponent
-    00000002:
       type: {class: InputComponent, ns: , asm: Assembly-CSharp}
       data:
         CurrentOffcet: {x: 56, y: 76}
@@ -123,9 +117,3 @@ MonoBehaviour:
           width: 0
           height: 0
         GameObject: {fileID: 0}
-    00000003:
-      type: {class: MovementComponent, ns: Framework.Core.Runtime, asm: Assembly-CSharp}
-      data:
-        CurrentVelocity: {x: 0, y: 0, z: 0}
-        CurrentAcceleration: {x: 0, y: 0, z: 0}
-        Transform: {fileID: 8296130790843035664}

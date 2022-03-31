@@ -15,8 +15,8 @@ namespace Framework.Core.Runtime
 
         public readonly GameObject AttachedGameObject;
 
-        public event FrameworkEvent<FComponent, Type> OnFComponentAdd;
-        public event FrameworkEvent<FComponent, Type> OnFComponentRemove;
+        public event FrameworkDelegate<FComponent, Type> OnFComponentAdd;
+        public event FrameworkDelegate<FComponent, Type> OnFComponentRemove;
 
         public FEntity(FEntityProvider entityProvider)
         {

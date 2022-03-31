@@ -159,7 +159,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _statesEnum:
     _typeName: State
-  _injections: []
+  _injections:
+  - {fileID: 8296130790843035666, guid: 0a8893255c3e38e40a1f835830d2a43c, type: 3}
 --- !u!4 &1292421538
 Transform:
   m_ObjectHideFlags: 0

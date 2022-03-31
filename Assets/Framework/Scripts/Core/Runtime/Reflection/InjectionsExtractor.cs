@@ -14,7 +14,7 @@ namespace Framework.Core.Runtime
             IEnumerable<FieldInfo> fields = systemType.GetFields(InjectionFlags)
                 .Where(field => field.GetCustomAttribute(typeof(InjectFieldAttribute)) != null);
 
-            if (systemType.BaseType == typeof(FSystemFoundation))
+            if (systemType.BaseType is null)
                 return fields;
 
             return fields.Concat(GetInjectionsData(systemType.BaseType));

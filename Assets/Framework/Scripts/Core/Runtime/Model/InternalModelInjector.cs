@@ -30,21 +30,37 @@ namespace Framework.Core.Runtime
             {
                 foreach (FieldInfo field in data.ModelInjectionsFields)
                 {
-                    if (_models.ContainsKey(field.FieldType))
-                    {
-                        field.SetValue(data.System, _models[field.FieldType]);
-                    }
-                    else
-                    {
-                        object value = DataLoader.Load(FormFileName(field.FieldType), SaveDirectory);
-
-                        if(value is null)
-                            value = Activator.CreateInstance(field.FieldType);
-
-                        _models.Add(field.FieldType, value);
-                        field.SetValue(data.System, _models[field.FieldType]);
-                    }
+                    ScanAndInjectInternalModelTypes(field, data.System);
                 }
+            }
+        }
+
+        private void ScanAndInjectInternalModelTypes(FieldInfo field, object declaredOnject)
+        {
+            InjectModel(field, declaredOnject);
+
+            foreach (FieldInfo sytemExcludedModelField in InternalModelExtractor.GetInternalModelData(field.FieldType))
+            { 
+                InjectModel(sytemExcludedModelField, _models[field.FieldType]);
+                ScanAndInjectInternalModelTypes(sytemExcludedModelField, _models[field.FieldType]);
+            }
+        }
+
+        private void InjectModel(FieldInfo modelField, object declaredObject)
+        {
+            if (_models.ContainsKey(modelField.FieldType))
+            {
+                modelField.SetValue(declaredObject, _models[modelField.FieldType]);
+            }
+            else
+            {
+                object value = DataLoader.Load(FormFileName(modelField.FieldType), SaveDirectory);
+
+                if (value is null)
+                    value = Activator.CreateInstance(modelField.FieldType);
+
+                _models.Add(modelField.FieldType, value);
+                modelField.SetValue(declaredObject, _models[modelField.FieldType]);
             }
         }
 

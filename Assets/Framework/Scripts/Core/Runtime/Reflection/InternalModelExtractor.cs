@@ -15,7 +15,7 @@ namespace Framework.Core.Runtime
                 .Where(field => field.GetCustomAttribute(typeof(InjectModelAttribute)) != null 
                 && field.FieldType.GetCustomAttribute<InternalModelAttribute>() != null);
 
-            if (systemType.BaseType == typeof(FSystemFoundation))
+            if (systemType.BaseType is null)
                 return fields;
 
             return fields.Concat(GetInternalModelData(systemType.BaseType));

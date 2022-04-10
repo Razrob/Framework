@@ -63,5 +63,7 @@ namespace Framework.Core.Runtime
         {
 
         }
+
+        public void OnBootLoadComplete() { }
     }
 }

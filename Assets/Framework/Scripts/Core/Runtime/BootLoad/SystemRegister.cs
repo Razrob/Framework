@@ -117,5 +117,7 @@ namespace Framework.Core.Runtime
                         _systemExecuteRepository.GetStatedExecuteHandler(methodID, stateIndex).RemoveTarget(data.System);
             }
         }
+
+        public void OnBootLoadComplete() { }
     }
 }

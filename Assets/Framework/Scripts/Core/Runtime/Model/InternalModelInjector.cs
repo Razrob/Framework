@@ -7,19 +7,23 @@ namespace Framework.Core.Runtime
 {
     public class InternalModelInjector : IBootLoadElement
     {
-        private readonly Dictionary<Type, object> _models;
+        private readonly Dictionary<Type, InternalModel> _models;
         private readonly SystemRegister _systemRegister;
+
+        private readonly MethodInfo _onInjectMethodInfo;
 
         private const string SaveDirectory = "/InternalModel";
 
-        public IReadOnlyDictionary<Type, object> Models => _models;
+        public IReadOnlyDictionary<Type, InternalModel> Models => _models;
 
-        public event FrameworkDelegate<object> OnModelCreate;
+        public event FrameworkDelegate<InternalModel> OnModelCreate;
 
         public InternalModelInjector()
         {
-            _models = new Dictionary<Type, object>();
+            _models = new Dictionary<Type, InternalModel>();
             _systemRegister = LoadElementAdapter<SystemRegister>.Instance;
+
+            _onInjectMethodInfo = InternalModelExtractor.GetOnInjectMethodInfo();
 
             foreach (SystemModule systemModule in _systemRegister.RegisteredModules)
                 InjectModel(systemModule);
@@ -52,22 +56,38 @@ namespace Framework.Core.Runtime
 
         private void InjectModel(FieldInfo modelField, object declaredObject)
         {
+            if (!ModelTypeIsValid(modelField.FieldType))
+                return;
+
             if (_models.ContainsKey(modelField.FieldType))
             {
                 modelField.SetValue(declaredObject, _models[modelField.FieldType]);
             }
             else
             {
-                object value = DataLoader.Load(FormFileName(modelField.FieldType), SaveDirectory);
+                InternalModel value = DataLoader.Load(FormFileName(modelField.FieldType), SaveDirectory) as InternalModel;
 
                 if (value is null)
-                    value = Activator.CreateInstance(modelField.FieldType);
+                    value = Activator.CreateInstance(modelField.FieldType) as InternalModel;
 
                 _models.Add(modelField.FieldType, value);
                 modelField.SetValue(declaredObject, _models[modelField.FieldType]);
 
                 OnModelCreate?.Invoke(value);
             }
+        }
+
+        private bool ModelTypeIsValid(Type modelType)
+        {
+            while(modelType != null)
+            {
+                if (modelType == typeof(InternalModel))
+                    return true;
+
+                modelType = modelType.BaseType;
+            }
+
+            return false;
         }
 
         private void TryUnloadModel(SystemModule systemModule)
@@ -100,6 +120,12 @@ namespace Framework.Core.Runtime
                     }
                 }
             }
+        }
+
+        public void OnBootLoadComplete() 
+        {
+            foreach(InternalModel model in _models.Values)
+                _onInjectMethodInfo.Invoke(model, null);
         }
     }
 }

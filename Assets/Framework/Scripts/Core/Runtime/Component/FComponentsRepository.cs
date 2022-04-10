@@ -7,7 +7,7 @@ using System.Reflection;
 
 namespace Framework.Core.Runtime
 {
-    public class FComponentsRepository
+    public class FComponentsRepository : IBootLoadElement
     {
         private readonly Dictionary<Type, LinkedList<FComponent>> _components;
 
@@ -17,8 +17,10 @@ namespace Framework.Core.Runtime
                 (SubTypesFinder.FindTypes(new Type[] { typeof(FComponent) }, Assembly.GetAssembly(typeof(FComponent))).Length);
         }
 
-        public void AddFComponent(FComponent component, Type componentType)
+        public void AddFComponent(FComponent component)
         {
+            Type componentType = component.GetType();
+
             if (_components.ContainsKey(componentType))
                 _components[componentType].AddFirst(component);
             else
@@ -29,9 +31,9 @@ namespace Framework.Core.Runtime
             }
         }
 
-        public void RemoveFComponent(FComponent component, Type componentType)
+        public void RemoveFComponent(FComponent component)
         {
-            if (_components.TryGetValue(componentType, out LinkedList<FComponent> list))
+            if (_components.TryGetValue(component.GetType(), out LinkedList<FComponent> list))
                 list.Remove(component);
         }
 
@@ -42,5 +44,7 @@ namespace Framework.Core.Runtime
 
             return new TComponent[0];
         }
+
+        public void OnBootLoadComplete() { }
     }
 }

@@ -15,8 +15,8 @@ namespace Framework.Core.Runtime
 
         public readonly GameObject AttachedGameObject;
 
-        public event FrameworkDelegate<FComponent, Type> OnFComponentAdd;
-        public event FrameworkDelegate<FComponent, Type> OnFComponentRemove;
+        public event FrameworkDelegate<FComponent> OnFComponentAdd;
+        public event FrameworkDelegate<FComponent> OnFComponentRemove;
 
         public FEntity(FEntityProvider entityProvider)
         {
@@ -32,6 +32,15 @@ namespace Framework.Core.Runtime
                 _entityBinders.Add(binderType, (IEntityBinder)AttachedGameObject.AddComponent(binderType));
                 _entityBinders[binderType].BindEntity(this);
             }
+        }
+
+        public TBinder GetBinder<TBinder>() where TBinder : MonoBehaviour, IEntityBinder
+        {
+            Type type = typeof(TBinder);
+            if (_entityBinders.TryGetValue(type, out IEntityBinder entityBinder))
+                return entityBinder as TBinder;
+
+            return null;
         }
 
         public TComponent GetFComponent<TComponent>() where TComponent : FComponent
@@ -52,7 +61,7 @@ namespace Framework.Core.Runtime
             TComponent component = new TComponent();
             _components.Add(type, component);
 
-            OnFComponentAdd?.Invoke(component, type);
+            OnFComponentAdd?.Invoke(component);
 
             return component;
         }
@@ -65,7 +74,7 @@ namespace Framework.Core.Runtime
                 FComponent component = _components[type];
                 _components.Remove(typeof(TComponent));
 
-                OnFComponentRemove?.Invoke(component, type);
+                OnFComponentRemove?.Invoke(component);
 
                 return true;
             }
@@ -84,7 +93,7 @@ namespace Framework.Core.Runtime
 
                     _components.Remove(componentType);
 
-                    OnFComponentRemove?.Invoke(component, componentType);
+                    OnFComponentRemove?.Invoke(component);
 
                     break;
                 }

@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using System;
 
@@ -16,10 +15,8 @@ namespace Framework.Core.Runtime
         {
             LoadElementAdapter<FEntityRegister>.Instance.UnregisterFEntity(entity);
 
-            Component entityBinder = (Component)entity.AttachedGameObject.GetComponent<IEntityBinder>();
-
-            if (entityBinder != null)
-                UnityEngine.Object.Destroy(entityBinder);
+            foreach (IEntityBinder entityBinder in entity.EntityBinders.Values)
+                UnityEngine.Object.Destroy((Component)entityBinder);
 
             if (destroyGameObjectAlso)
                 UnityEngine.Object.Destroy(entity.AttachedGameObject);
@@ -28,6 +25,7 @@ namespace Framework.Core.Runtime
         public static void DestroyFComponent(FComponent component)
         {
             component.AttachedEntity.RemoveFComponent(component);
+            LoadElementAdapter<FComponentsRepository>.Instance.RemoveFComponent(component);
         }
     }
 }

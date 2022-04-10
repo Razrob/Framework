@@ -51,5 +51,7 @@ namespace Framework.Core.Runtime
             foreach(FieldInfo selectorField in ComponentSelectorExtractor.GetSelectors(model.GetType()))
                 selectorField.SetValue(model, Activator.CreateInstance(selectorField.FieldType, _componentsRepository));
         }
+
+        public void OnBootLoadComplete() { }
     }
 }

@@ -42,5 +42,7 @@ namespace Framework.Core.Runtime
                 throw new InvalidCastException("Invalid state");
             }
         }
+
+        public void OnBootLoadComplete() { }
     }
 }

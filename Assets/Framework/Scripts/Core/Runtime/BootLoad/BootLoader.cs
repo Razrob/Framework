@@ -40,6 +40,7 @@ namespace Framework.Core.Runtime
             _systemLauncher = LoadElementAdapter<SystemLauncher>.Initialize(new SystemLauncher(_systemExecuteRepository));
 
             _entityRegister = LoadElementAdapter<FEntityRegister>.Initialize(new FEntityRegister(out _componentsRepository));
+            LoadElementAdapter<FComponentsRepository>.Initialize(_componentsRepository);
         }
 
         private void Start()
@@ -49,10 +50,18 @@ namespace Framework.Core.Runtime
             _fieldsInjector = LoadElementAdapter<FieldsInjector>.Initialize(new FieldsInjector(_injections));
 
             Validate();
+
+            CallBootLoadCallback();
+        }
+
+        private void CallBootLoadCallback()
+        {
+            foreach (IBootLoadElement loadElement in LoadElementAdapter.BootLoadElements)
+                loadElement.OnBootLoadComplete();
         }
 
         private void Validate()
-        { 
+        {
             StateValidator stateValidator = new StateValidator(_stateMachine.StatesIndexes, _statesEnum.Type);
             stateValidator.ValidateSystems(_systemRegister.RegisteredModules);
         }
@@ -67,5 +76,7 @@ namespace Framework.Core.Runtime
 
             return new StatesPreset(indexes);
         }
+
+        public void OnBootLoadComplete() { }
     }
 }

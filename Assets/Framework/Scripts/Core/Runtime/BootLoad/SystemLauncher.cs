@@ -102,5 +102,7 @@ namespace Framework.Core.Runtime
             _systemExecuteRepository.GetStatedExecuteHandler(methodID, stateIndex)?.ExecuteSpecific(targets);
             _systemExecuteRepository.GetNotStatedExecuteHandler(methodID)?.ExecuteSpecific(targets);
         }
+
+        public void OnBootLoadComplete() { }
     }
 }

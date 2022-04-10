@@ -21,6 +21,11 @@ namespace Framework.Core.Runtime
             FieldInfo attachedFEntityField = FComponentsFieldsExtractor.GetAttachedFEntityFieldInfo();
             MethodInfo onAttachMethodInfo = FComponentsFieldsExtractor.GetExecutableComponentMethodInfo(ExecutableComponentMethodID.OnAttach);
 
+            FieldInfo instantiatedEntityField = typeof(FEntityProvider).GetField(nameof(FEntityProvider.InstantiatedEntity),
+                BindingFlags.Instance | BindingFlags.Public);
+
+            instantiatedEntityField.SetValue(entityProvider, entity);
+
             entity.OnFComponentAdd += _componentsRepository.AddFComponent;
             entity.OnFComponentRemove += _componentsRepository.RemoveFComponent;
 
@@ -29,12 +34,13 @@ namespace Framework.Core.Runtime
                 FComponent component = entity.FComponents[componentType];
                 
                 attachedFEntityField.SetValue(component, entity);
-                _componentsRepository.AddFComponent(component, componentType);
-
-                onAttachMethodInfo.Invoke(component, new object[] { entity }); 
+                _componentsRepository.AddFComponent(component);
             }
 
-            UnityEngine.Object.Destroy(entityProvider);
+            foreach(FComponent component in entity.FComponents.Values)
+                onAttachMethodInfo.Invoke(component, new object[] { entity });
+
+            entityProvider.StartCoroutine(DestroyEntityProvider(entityProvider));
         }
 
         public void UnregisterFEntity(FEntity entity)
@@ -48,10 +54,19 @@ namespace Framework.Core.Runtime
             {
                 FComponent component = entity.FComponents[componentType];
 
-                _componentsRepository.RemoveFComponent(component, componentType);
+                _componentsRepository.RemoveFComponent(component);
 
                 onDetachMethodInfo.Invoke(component, new object[] { entity });
             }
         }
+
+        private IEnumerator DestroyEntityProvider(FEntityProvider entityProvider)
+        {
+            yield return null;
+
+            UnityEngine.Object.Destroy(entityProvider);
+        }
+
+        public void OnBootLoadComplete() { }
     }
 }

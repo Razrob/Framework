@@ -44,5 +44,7 @@ namespace Framework.Core.Runtime
             _receivers.AddLast(eventReceiver);
             return new UnsubscribeHandler<ExecutableSystemMethodID>(_receivers, eventReceiver);
         }
+
+        public void OnBootLoadComplete() { }
     }
 }

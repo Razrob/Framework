@@ -15,6 +15,7 @@ namespace Framework.Core.Runtime
 
         public IReadOnlyList<FComponentProvider> ComponentProviders => _componentProviders;
         public IEnumerable<Type> BindersTypes => _entityBinders.Select(binder => binder.Type);
+        public readonly FEntity InstantiatedEntity;
 
         private void Awake()
         {

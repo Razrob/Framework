@@ -5,9 +5,9 @@ using System;
 
 namespace Framework.Core.Runtime
 {
-    public class LoadElementAdapter<TLoadElement> where TLoadElement : IBootLoadElement
+    public class LoadElementAdapter<TLoadElement> : LoadElementAdapter where TLoadElement : IBootLoadElement
     {
-        private static object _empty = new object();
+        private static readonly object _empty = new object();
 
         private static TLoadElement _instance;
         public static TLoadElement Instance => GetLoadElement();
@@ -19,6 +19,7 @@ namespace Framework.Core.Runtime
                 lock (_empty)
                 {
                     _instance = loadElement;
+                    _bootLoadElements.Add(loadElement);
                 }
             }
 

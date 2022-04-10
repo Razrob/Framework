@@ -7,6 +7,7 @@ namespace Framework.Core.Runtime
     public class ComponentSelector<TComponent> : IEnumerable<TComponent> where TComponent : FComponent
     {
         public readonly IEnumerable<TComponent> Components;
+        public TComponent First => this[0];
 
         public ComponentSelector(FComponentsRepository componentsRepository)
         {

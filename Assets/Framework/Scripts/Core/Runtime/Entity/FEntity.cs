@@ -24,13 +24,34 @@ namespace Framework.Core.Runtime
             _components = new Dictionary<Type, FComponent>(entityProvider.ComponentProviders.Count);
             _entityBinders = new Dictionary<Type, IEntityBinder>(entityProvider.BindersTypes.Count());
 
+            FComponentsRepository componentsRepository = LoadElementAdapter<FComponentsRepository>.Instance;
+
+            OnFComponentAdd += componentsRepository.AddFComponent;
+            OnFComponentRemove += componentsRepository.RemoveFComponent;
+
             foreach (FComponentProvider componentProvider in entityProvider.ComponentProviders)
-                _components.Add(componentProvider.ComponentType, componentProvider.Component);
+            {
+                Type baseComponentType = componentProvider.ComponentType;
+
+                while (baseComponentType != typeof(FComponent))
+                {
+                    _components.Add(baseComponentType, componentProvider.Component);
+                    baseComponentType = baseComponentType.BaseType;
+                }
+
+                OnFComponentAdd?.Invoke(componentProvider.Component);
+            }
 
             foreach (Type binderType in entityProvider.BindersTypes)
             {
-                _entityBinders.Add(binderType, (IEntityBinder)AttachedGameObject.AddComponent(binderType));
-                _entityBinders[binderType].BindEntity(this);
+                Type baseBinderType = binderType;
+
+                while (baseBinderType != typeof(MonoBehaviour) && baseBinderType != typeof(object) && baseBinderType != null)
+                {
+                    _entityBinders.Add(binderType, (IEntityBinder)AttachedGameObject.AddComponent(binderType));
+                    _entityBinders[binderType].BindEntity(this);
+                    baseBinderType = baseBinderType.BaseType;
+                }
             }
         }
 
@@ -52,56 +73,66 @@ namespace Framework.Core.Runtime
             return null;
         }
 
-        public TComponent AddFComponent<TComponent>() where TComponent : FComponent, new()
+        public void AddFComponent(FComponent component)
         {
-            Type type = typeof(TComponent);
-            if (_components.ContainsKey(type))
-                return null;
+            if (component is null)
+                return;
 
-            TComponent component = new TComponent();
-            _components.Add(type, component);
+            Type type = component.GetType();
+            if (_components.ContainsKey(type))
+                return;
+
+            while (type != typeof(FComponent))
+            {
+                _components.Add(type, component);
+                type = type.BaseType;
+            }
 
             OnFComponentAdd?.Invoke(component);
-
-            return component;
         }
 
         public bool RemoveFComponent<TComponent>() where TComponent : FComponent
         {
             Type type = typeof(TComponent);
-            if (_components.ContainsKey(type))
+            bool removed = false;
+            FComponent component = null;
+
+            while (type != typeof(FComponent))
             {
-                FComponent component = _components[type];
-                _components.Remove(typeof(TComponent));
+                if (_components.ContainsKey(type))
+                {
+                    component = _components[type];
+                    _components.Remove(typeof(TComponent));
+                    removed = true;
+                }
 
-                OnFComponentRemove?.Invoke(component);
-
-                return true;
+                type = type.BaseType;
             }
 
-            return false;
+            if (removed)
+                OnFComponentRemove?.Invoke(component);
+
+            return removed;
         }
 
         public bool RemoveFComponent(FComponent component)
         {
-            if (_components.ContainsValue(component))
+            Type type = component.GetType();
+            bool removed = false;
+
+            while (type != typeof(FComponent))
             {
-                foreach (Type componentType in _components.Keys)
+                if (_components.ContainsKey(type))
                 {
-                    if (_components[componentType] != component)
-                        continue;
-
-                    _components.Remove(componentType);
-
-                    OnFComponentRemove?.Invoke(component);
-
-                    break;
+                    _components.Remove(type);
+                    removed = true;
                 }
-
-                return true;
             }
 
-            return false;
+            if (removed)
+                OnFComponentRemove?.Invoke(component);
+
+            return removed;
         }
     }
 }

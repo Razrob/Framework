@@ -19,22 +19,34 @@ namespace Framework.Core.Runtime
 
         public void AddFComponent(FComponent component)
         {
-            Type componentType = component.GetType();
+            Type componentBaseType = component.GetType();
 
-            if (_components.ContainsKey(componentType))
-                _components[componentType].AddFirst(component);
-            else
+            while (componentBaseType != typeof(FComponent))
             {
-                LinkedList<FComponent> list = new LinkedList<FComponent>();
-                list.AddFirst(component);
-                _components.Add(componentType, list);
+                if (_components.ContainsKey(componentBaseType))
+                    _components[componentBaseType].AddFirst(component);
+                else
+                {
+                    LinkedList<FComponent> list = new LinkedList<FComponent>();
+                    list.AddFirst(component);
+                    _components.Add(componentBaseType, list);
+                }
+
+                componentBaseType = componentBaseType.BaseType;
             }
         }
 
         public void RemoveFComponent(FComponent component)
         {
-            if (_components.TryGetValue(component.GetType(), out LinkedList<FComponent> list))
-                list.Remove(component);
+            Type componentBaseType = component.GetType();
+
+            while (componentBaseType != typeof(FComponent))
+            {
+                if (_components.TryGetValue(componentBaseType, out LinkedList<FComponent> list))
+                    list.Remove(component);
+
+                componentBaseType = componentBaseType.BaseType;
+            }
         }
 
         public IEnumerable<TComponent> GetFComponents<TComponent>() where TComponent : FComponent

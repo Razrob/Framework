@@ -36,8 +36,7 @@ namespace Framework.Core.Editor
 
         public override void OnInspectorGUI()
         {
-            serializedObject.Update();  
-
+            serializedObject.Update();
             SerializedProperty componentProvidersArrayProperty = serializedObject.FindProperty(ComponentProvidersArrayName);
             CutList(ref _showedElements, componentProvidersArrayProperty.arraySize, true);
 
@@ -47,20 +46,50 @@ namespace Framework.Core.Editor
             {
                 SerializedProperty arrayElement = componentProvidersArrayProperty.GetArrayElementAtIndex(i);
 
-                Type componentType = Assembly.GetAssembly(typeof(FComponentProvider))
-                    .GetType(arrayElement.FindPropertyRelative(ComponentTypeString).stringValue);
+                string typeName = arrayElement.FindPropertyRelative(ComponentTypeString)?.stringValue; 
+                Type componentType = typeName is null ? null : Assembly.GetAssembly(typeof(FComponentProvider))
+                    .GetType(typeName);
 
-                FieldInfo[] fieldsInfo = GetComponentFields(componentType);
+                if(componentType is null)
+                    Debug.Log($"FComponent in {_entityProvider.gameObject.name} not found. Probably it was renamed");
 
-                _showedElements[i] = EditorGUILayout.BeginFoldoutHeaderGroup(_showedElements[i], new GUIContent(componentType.Name), 
-                    CustomEditorStyles.ComponentHeaderStyle, rect => DrawComponentMenu(i));
+                FieldInfo[] fieldsInfo = null;
+
+                if(componentType != null)
+                    fieldsInfo = GetComponentFields(componentType);
+
+                const float menuButtonWidth = 50f;
+                Rect menuButtonRect = EditorGUILayout.GetControlRect(GUILayout.Height(-3f));
+                Rect componentHeaderRect = EditorGUILayout.GetControlRect(GUILayout.Height(CustomEditorStyles.ComponentHeaderStyle.fixedHeight));
+
+                componentHeaderRect.y++;
+                componentHeaderRect.width -= menuButtonWidth + 5f;
+
+                if (componentType != null)
+                {
+                    if (GUI.Button(componentHeaderRect, new GUIContent(componentType.Name), CustomEditorStyles.ComponentHeaderStyle))
+                        _showedElements[i] = !_showedElements[i];
+                }
+                else
+                    GUI.Button(componentHeaderRect, new GUIContent($"<type_not_found>"), CustomEditorStyles.ComponentHeaderStyle);
+
+                GUIStyle style = CustomEditorStyles.ComponentHeaderStyle;
+                style.alignment = TextAnchor.MiddleCenter;
+                style.padding = new RectOffset(5, 0, 0, 0);
+
+                menuButtonRect.width = menuButtonWidth;
+                menuButtonRect.x += EditorGUIUtility.currentViewWidth - menuButtonWidth * 1.5f;
+                menuButtonRect.height = style.fixedHeight;
+
+                if (GUI.Button(menuButtonRect, "Menu", style))
+                    DrawComponentMenu(i);
+
+                if (componentType is null)
+                    continue;
 
                 if (_showedElements[i])
                     DrawComponentFields(fieldsInfo, arrayElement.FindPropertyRelative(ComponentFieldName));
-
-                EditorGUILayout.EndFoldoutHeaderGroup();
             }
-
 
             DrawAppendButton(); 
 

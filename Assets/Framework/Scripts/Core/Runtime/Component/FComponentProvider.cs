@@ -9,7 +9,7 @@ namespace Framework.Core.Runtime
     public class FComponentProvider
     {
         [SerializeReference] private FComponent _component;
-        [SerializeField] private string _componentType;
+        [SerializeReference] private string _componentType;
 
         public FComponent Component => _component;
         public Type ComponentType => Type.GetType(_componentType);

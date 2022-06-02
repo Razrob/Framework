@@ -26,18 +26,13 @@ namespace Framework.Core.Runtime
 
             instantiatedEntityField.SetValue(entityProvider, entity);
 
-            entity.OnFComponentAdd += _componentsRepository.AddFComponent;
-            entity.OnFComponentRemove += _componentsRepository.RemoveFComponent;
-
             foreach (Type componentType in entity.FComponents.Keys)
             {
                 FComponent component = entity.FComponents[componentType];
-                
                 attachedFEntityField.SetValue(component, entity);
-                _componentsRepository.AddFComponent(component);
             }
 
-            foreach(FComponent component in entity.FComponents.Values)
+            foreach (FComponent component in entity.FComponents.Values)
                 onAttachMethodInfo.Invoke(component, new object[] { entity });
 
             entityProvider.StartCoroutine(DestroyEntityProvider(entityProvider));
@@ -47,7 +42,7 @@ namespace Framework.Core.Runtime
         {
             entity.OnFComponentAdd -= _componentsRepository.AddFComponent;
             entity.OnFComponentRemove -= _componentsRepository.RemoveFComponent;
-            
+
             MethodInfo onDetachMethodInfo = FComponentsFieldsExtractor.GetExecutableComponentMethodInfo(ExecutableComponentMethodID.OnDetach);
 
             foreach (Type componentType in entity.FComponents.Keys)

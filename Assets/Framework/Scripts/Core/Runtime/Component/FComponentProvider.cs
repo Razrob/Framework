@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using System.Reflection;
 
 namespace Framework.Core.Runtime
 {
@@ -10,14 +11,16 @@ namespace Framework.Core.Runtime
     {
         [SerializeReference] private FComponent _component;
         [SerializeReference] private string _componentType;
+        [SerializeReference] private string _componentTypeAssemblyName;
 
         public FComponent Component => _component;
-        public Type ComponentType => Type.GetType(_componentType);
+        public Type ComponentType => Assembly.Load(_componentTypeAssemblyName).GetType(_componentType);
 
-        public FComponentProvider(Type componentType, FComponent component)
+        public FComponentProvider(Type componentType, Assembly typeAssembly, FComponent component)
         {
             _component = component;
             _componentType = componentType.FullName;
+            _componentTypeAssemblyName = typeAssembly.FullName;
         }
     }
 }

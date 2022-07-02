@@ -23,6 +23,7 @@ namespace Framework.Core.Editor
         private const string ComponentFieldName = "_component";
         private const string ComponentProvidersArrayName = "_componentProviders";
         private const string ComponentTypeString = "_componentType";
+        private const string ComponentTypeAssemblyString = "_componentTypeAssemblyName";
 
         private void OnEnable()
         {
@@ -31,7 +32,7 @@ namespace Framework.Core.Editor
             if(_showedElements is null) 
                 _showedElements = new List<bool>();
 
-            _subTypesFinder = new SubTypesFinder(new Type[] { typeof(FComponent) }, Assembly.GetAssembly(typeof(FComponent)));
+            _subTypesFinder = new SubTypesFinder(new Type[] { typeof(FComponent) });
         }
 
         public override void OnInspectorGUI()
@@ -47,8 +48,8 @@ namespace Framework.Core.Editor
                 SerializedProperty arrayElement = componentProvidersArrayProperty.GetArrayElementAtIndex(i);
 
                 string typeName = arrayElement.FindPropertyRelative(ComponentTypeString)?.stringValue; 
-                Type componentType = typeName is null ? null : Assembly.GetAssembly(typeof(FComponentProvider))
-                    .GetType(typeName);
+                string typeAssemblyName = arrayElement.FindPropertyRelative(ComponentTypeAssemblyString)?.stringValue;
+                Type componentType = typeName is null ? null : Assembly.Load(typeAssemblyName).GetType(typeName);
 
                 if(componentType is null)
                     Debug.Log($"FComponent in {_entityProvider.gameObject.name} not found. Probably it was renamed");
@@ -185,7 +186,7 @@ namespace Framework.Core.Editor
                 array.InsertArrayElementAtIndex(newElementIndex);
 
                 FComponent component = (FComponent)Activator.CreateInstance(type);
-                FComponentProvider componentProvider = new FComponentProvider(type, component);
+                FComponentProvider componentProvider = new FComponentProvider(type, type.Assembly, component);
 
                 array.GetArrayElementAtIndex(newElementIndex).managedReferenceValue = componentProvider;
 

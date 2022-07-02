@@ -9,7 +9,7 @@ namespace Framework.Core.Runtime
     [DefaultExecutionOrder(-500)]
     public class BootLoader : MonoBehaviour, IBootLoadElement
     {
-        [SerializeField][SubTypesFilter(new Type[] { typeof(Enum) }, typeof(BootLoader))] private SerializableType _statesEnum;
+        [SerializeField][SubTypesFilter(new Type[] { typeof(Enum) })] private SerializableType _statesEnum;
         [SerializeField] private UnityEngine.Object[] _injections;
 
         private StatesPreset _statesPreset;

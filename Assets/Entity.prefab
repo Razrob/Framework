@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 8296130790843035664}
   - component: {fileID: 8296130790843035662}
   - component: {fileID: 8296130790843035663}
-  - component: {fileID: 8296130790843035665}
   m_Layer: 0
   m_Name: Entity
   m_TagString: Untagged
@@ -82,38 +81,3 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &8296130790843035665
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8296130790843035666}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3c72c788d499d784b958bddcffb3e17f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _componentProviders:
-  - id: 0
-  _entityBinders: []
-  references:
-    version: 1
-    00000000:
-      type: {class: FComponentProvider, ns: Framework.Core.Runtime, asm: Assembly-CSharp}
-      data:
-        _component:
-          id: 1
-        _componentType: InputComponent
-    00000001:
-      type: {class: InputComponent, ns: , asm: Assembly-CSharp}
-      data:
-        CurrentOffcet: {x: 56, y: 76}
-        Rotation: {x: 0, y: 0, z: 0, w: 0}
-        Rect:
-          serializedVersion: 2
-          x: 0
-          y: 0
-          width: 0
-          height: 0
-        GameObject: {fileID: 0}

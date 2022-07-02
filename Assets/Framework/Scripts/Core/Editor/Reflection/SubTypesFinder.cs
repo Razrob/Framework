@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace Framework.Core.Runtime
+namespace Framework.Core.Editor
 {
     public class SubTypesFinder
     {
@@ -13,21 +13,15 @@ namespace Framework.Core.Runtime
         public SubTypesFinder(IEnumerable<Type> baseTypes)
         {
             _baseTypes = baseTypes;
-            SubTypes = FindTypes(baseTypes, _baseTypes.ElementAt(0).Assembly);
+            SubTypes = FindTypes(baseTypes);
         }
 
-        public SubTypesFinder(IEnumerable<Type> baseTypes, Assembly targetAssembly)
-        {
-            _baseTypes = baseTypes;
-            SubTypes = FindTypes(baseTypes, targetAssembly);
-        }
-
-        public static Type[] FindTypes(IEnumerable<Type> baseTypes, Assembly assembly)
+        public static IReadOnlyList<Type> FindTypes(IEnumerable<Type> baseTypes, Assembly specificAssembly)
         {
             if (baseTypes is null)
                 throw new NullReferenceException();
 
-            return assembly.GetTypes().Where(type =>
+            return specificAssembly.GetTypes().Where(type =>
             {
                 return baseTypes.All(baseType =>
                 {
@@ -36,6 +30,19 @@ namespace Framework.Core.Runtime
                     else return type.GetInterface(baseType.ToString()) != null;
                 });
             }).ToArray();
+        }
+
+        public static IReadOnlyList<Type> FindTypes(IEnumerable<Type> baseTypes)
+        {
+            if (baseTypes is null)
+                throw new NullReferenceException();
+
+            List<Type> types = new List<Type>();
+
+            foreach (Assembly assembly in DllNamesFinder.SolutionDlls) 
+                types.AddRange(FindTypes(baseTypes, assembly));
+
+            return types;
         }
     }
 }

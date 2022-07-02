@@ -38,7 +38,7 @@ namespace Framework.Core.Editor
             property.serializedObject.Update();
 
             _subTypesFilter = attribute as SubTypesFilterAttribute;
-            _subTypesFinder = new SubTypesFinder(_subTypesFilter.BaseTypes, _subTypesFilter.Assembly);
+            _subTypesFinder = new SubTypesFinder(_subTypesFilter.BaseTypes);
 
             _subTypesNamesArray = _subTypesFinder.SubTypes.Select(type => type.Name).ToArray();
             _selectedType = LoadActiveIndex(property);

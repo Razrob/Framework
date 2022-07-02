@@ -13,8 +13,7 @@ namespace Framework.Core.Runtime
 
         public FComponentsRepository()
         {
-            _components = new Dictionary<Type, LinkedList<FComponent>>
-                (SubTypesFinder.FindTypes(new Type[] { typeof(FComponent) }, Assembly.GetAssembly(typeof(FComponent))).Length);
+            _components = new Dictionary<Type, LinkedList<FComponent>>();
         }
 
         public void AddFComponent(FComponent component)

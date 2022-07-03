@@ -5,12 +5,12 @@ using System.Reflection;
 
 namespace Framework.Core.Runtime
 {
-    public static class ComponentSelectorExtractor
+    internal static class ComponentSelectorExtractor
     {
         private static readonly BindingFlags SelectorsFlags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public;
         private static readonly Type SelectorType = typeof(ComponentSelector<>);
-        
-        public static IEnumerable<FieldInfo> GetSelectors(Type systemType)
+
+        internal static IEnumerable<FieldInfo> GetSelectors(Type systemType)
         {
             return systemType.GetFields(SelectorsFlags)
                 .Where(field => field.FieldType.IsGenericType)

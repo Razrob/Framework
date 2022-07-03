@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
@@ -7,7 +6,7 @@ using System.Linq;
 
 namespace Framework.Core.Editor
 {
-    public abstract class DropDownWindowBase<T> : EditorWindow where T : class
+    internal abstract class DropDownWindowBase<T> : EditorWindow where T : class
     {
         private Rect _rect;
         private Vector2 _size;
@@ -28,7 +27,7 @@ namespace Framework.Core.Editor
 
         private int _lastSuitableValuesCount;
 
-        public void Initialize(Rect rect, IReadOnlyList<T> dropDownValues, bool allowUndefined = false)
+        internal void Initialize(Rect rect, IReadOnlyList<T> dropDownValues, bool allowUndefined = false)
         {
             OnTypeSelect = null;
 
@@ -42,7 +41,7 @@ namespace Framework.Core.Editor
             RefreshWindowHeigth(0);
         }
 
-        public void SetExcludedValues(IEnumerable<T> values) => _excludedValues = values;
+        internal void SetExcludedValues(IEnumerable<T> values) => _excludedValues = values;
 
         protected abstract string ValueToString(T value);
         protected virtual bool ValueEquals(T value1, T value2) => false;

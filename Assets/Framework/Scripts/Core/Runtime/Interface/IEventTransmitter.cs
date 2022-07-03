@@ -2,12 +2,12 @@ using System;
 
 namespace Framework.Core.Runtime
 {
-    public interface IEventTransmitter
+    internal interface IEventTransmitter
     {
         public IDisposable Subscribe(IEventReceiver eventReceiver);
     }
 
-    public interface IEventTransmitter<T>
+    internal interface IEventTransmitter<T>
     {
         public IDisposable Subscribe(IEventReceiver<T> eventReceiver);
     }

@@ -1,12 +1,10 @@
 using System.Collections.Generic;
 using System;
-using System.Reflection;
 using System.Linq;
-using UnityEngine;
 
 namespace Framework.Core.Runtime
 {
-    public class SystemRegister : IBootLoadElement
+    internal class SystemRegister : IBootLoadElement
     {
         private readonly LinkedList<SystemModule> _registeredModules;
         private readonly LinkedList<FSystemFoundation> _registeredSystems;
@@ -16,13 +14,13 @@ namespace Framework.Core.Runtime
 
         private readonly SystemExecuteRepository _systemExecuteRepository;
 
-        public IReadOnlyCollection<SystemModule> RegisteredModules => _registeredModules;
-        public IReadOnlyCollection<FSystemFoundation> RegisteredSystems => _registeredSystems;
+        internal IReadOnlyCollection<SystemModule> RegisteredModules => _registeredModules;
+        internal IReadOnlyCollection<FSystemFoundation> RegisteredSystems => _registeredSystems;
 
-        public event RegisterDelegate<SystemModule> OnModuleRegister;
-        public event RegisterDelegate<SystemModule> OnModuleUnregister;
+        internal event RegisterDelegate<SystemModule> OnModuleRegister;
+        internal event RegisterDelegate<SystemModule> OnModuleUnregister;
 
-        public SystemRegister(StatesPreset statesPreset, out SystemExecuteRepository systemExecuteRepository)
+        internal SystemRegister(StatesPreset statesPreset, out SystemExecuteRepository systemExecuteRepository)
         {
             _registeredModules = new LinkedList<SystemModule>();
             _registeredSystems = new LinkedList<FSystemFoundation>();
@@ -43,13 +41,13 @@ namespace Framework.Core.Runtime
             systemExecuteRepository = _systemExecuteRepository = new SystemExecuteRepository(statesPreset.StatesIndexes);
         }
 
-        public void RegisterSystemModule(SystemModule systemModule)
+        internal void RegisterSystemModule(SystemModule systemModule)
         {
             if (_registeredModules.Contains(systemModule))
                 return;
 
             if (_registeredSystems.Count(system => systemModule.Systems.Contains(system)) > 0)
-                throw new Exception("Systems cannot be duplicated. System module was not registered");
+                FrameworkDebuger.Log(LogType.Exception, "Systems cannot be duplicated. System module was not registered");
 
             _registeredModules.AddLast(systemModule);
             foreach (FSystemFoundation system in systemModule.Systems)
@@ -62,7 +60,7 @@ namespace Framework.Core.Runtime
             OnModuleRegister?.Invoke(systemModule);
         }
 
-        public void UnregisterSystemModule(SystemModule systemModule)
+        internal void UnregisterSystemModule(SystemModule systemModule)
         {
             if (!_registeredModules.Contains(systemModule))
                 return;

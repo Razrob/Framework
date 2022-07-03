@@ -5,14 +5,14 @@ using System;
 
 namespace Framework.Core.Runtime
 {
-    public class LoadElementAdapter<TLoadElement> : LoadElementAdapter where TLoadElement : IBootLoadElement
+    internal class LoadElementAdapter<TLoadElement> : LoadElementAdapter where TLoadElement : IBootLoadElement
     {
         private static readonly object _empty = new object();
 
         private static TLoadElement _instance;
-        public static TLoadElement Instance => GetLoadElement();
+        internal static TLoadElement Instance => GetLoadElement();
 
-        public static TLoadElement Initialize(TLoadElement loadElement)
+        internal static TLoadElement Initialize(TLoadElement loadElement)
         {
             if (_instance is null)
             {
@@ -29,7 +29,8 @@ namespace Framework.Core.Runtime
         private static TLoadElement GetLoadElement()
         {
             if (_instance is null)
-                throw new NullReferenceException("Element not initialized");
+                return (TLoadElement)FrameworkDebuger.Log(LogType.Exception, 
+                    "[NullReferenceException], LoadElementAdapter.GetLoadElement(), element not initialized");
 
             return _instance;
         }

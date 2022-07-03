@@ -5,12 +5,12 @@ using System;
 
 namespace Framework.Core.Runtime
 {
-    public class UnsubscribeHandler : IDisposable
+    internal class UnsubscribeHandler : IDisposable
     {
         private readonly ICollection<IEventReceiver> _receivers;
         private readonly IEventReceiver _unsubscribedReceiver;
 
-        public UnsubscribeHandler(ICollection<IEventReceiver> receivers, IEventReceiver unsubscribedReceiver)
+        internal UnsubscribeHandler(ICollection<IEventReceiver> receivers, IEventReceiver unsubscribedReceiver)
         {
             _receivers = receivers;
             _unsubscribedReceiver = unsubscribedReceiver;
@@ -22,12 +22,12 @@ namespace Framework.Core.Runtime
         }
     }
 
-    public class UnsubscribeHandler<T> : IDisposable
+    internal class UnsubscribeHandler<T> : IDisposable
     {
         private readonly ICollection<IEventReceiver<T>> _receivers;
         private readonly IEventReceiver<T> _unsubscribedReceiver;
 
-        public UnsubscribeHandler(ICollection<IEventReceiver<T>> receivers, IEventReceiver<T> unsubscribedReceiver)
+        internal UnsubscribeHandler(ICollection<IEventReceiver<T>> receivers, IEventReceiver<T> unsubscribedReceiver)
         {
             _receivers = receivers;
             _unsubscribedReceiver = unsubscribedReceiver;

@@ -1,17 +1,16 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
 
 namespace Framework.Core.Runtime
 {
-    public class MonoEventsTransmitter : MonoBehaviour, IBootLoadElement, IEventTransmitter<ExecutableSystemMethodID>
+    internal class MonoEventsTransmitter : MonoBehaviour, IBootLoadElement, IEventTransmitter<ExecutableSystemMethodID>
     {
         private readonly LinkedList<IEventReceiver<ExecutableSystemMethodID>> _receivers;
 
-        public event ExecuteDelegate OnInitialize;
+        internal event ExecuteDelegate OnInitialize;
 
-        public MonoEventsTransmitter()
+        internal MonoEventsTransmitter()
         {
             _receivers = new LinkedList<IEventReceiver<ExecutableSystemMethodID>>();
         }

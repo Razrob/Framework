@@ -9,7 +9,7 @@ namespace Framework.Core.Runtime
         public readonly IEnumerable<TComponent> Components;
         public TComponent First => this[0];
 
-        public ComponentSelector(FComponentsRepository componentsRepository)
+        internal ComponentSelector(FComponentsRepository componentsRepository)
         {
             Components = componentsRepository.GetFComponents<TComponent>();
         }

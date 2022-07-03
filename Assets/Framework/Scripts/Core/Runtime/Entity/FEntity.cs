@@ -18,7 +18,7 @@ namespace Framework.Core.Runtime
         public event FrameworkDelegate<FComponent> OnFComponentAdd;
         public event FrameworkDelegate<FComponent> OnFComponentRemove;
 
-        public FEntity(FEntityProvider entityProvider)
+        internal FEntity(FEntityProvider entityProvider)
         {
             AttachedGameObject = entityProvider.gameObject;
             _components = new Dictionary<Type, FComponent>(entityProvider.ComponentProviders.Count);

@@ -9,8 +9,7 @@ namespace Framework.Core.Runtime
     [Serializable]
     public class MovementComponent : FComponent
     {
-        [SerializeField] public Vector3 CurrentVelocity;
-        [SerializeField] public Vector3 CurrentAcceleration;
+        [SerializeField] public Vector3 Velocity;
         [SerializeField] public Transform Transform;
 
         protected override void OnAttach(FEntity entity)

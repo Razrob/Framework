@@ -1,35 +1,33 @@
-using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 using System;
 using System.Linq;
 
 namespace Framework.Core.Runtime
 {
-    public class StateMachine : IBootLoadElement
+    internal class StateMachine : IBootLoadElement
     {
         private readonly StatesPreset _statesPreset;
 
-        public int CurrentState { get; private set; }
-        public IReadOnlyList<int> StatesIndexes => _statesPreset.StatesIndexes;
+        internal int CurrentState { get; private set; }
+        internal IReadOnlyList<int> StatesIndexes => _statesPreset.StatesIndexes;
 
-        public event StateMachineDelegate<int> OnStateEnter;
-        public event StateMachineDelegate<int> OnStateExit;
+        internal event StateMachineDelegate<int> OnStateEnter;
+        internal event StateMachineDelegate<int> OnStateExit;
 
-        public StateMachine(StatesPreset statesPreset)
+        internal StateMachine(StatesPreset statesPreset)
         {
             _statesPreset = statesPreset;
             CurrentState = _statesPreset.StatesIndexes[0];
         }
 
-        public void SetState(Enum stateEnum)
+        internal void SetState(Enum stateEnum)
         {
             try
             {
                 int newState = Convert.ToInt32(stateEnum);
 
                 if (!_statesPreset.StatesIndexes.Contains(newState))
-                    throw new ArgumentException("State not found");
+                    FrameworkDebuger.Log(LogType.Exception, "[ArgumentException], StateMachine.SetState(), state not found");
 
                 int oldState = CurrentState;
                 CurrentState = newState;
@@ -39,7 +37,7 @@ namespace Framework.Core.Runtime
             }
             catch (InvalidCastException)
             {
-                throw new InvalidCastException("Invalid state");
+                FrameworkDebuger.Log(LogType.Exception, "[InvalidCastException], StateMachine.SetState(), invalid state");
             }
         }
 

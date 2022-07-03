@@ -1,5 +1,5 @@
 
 namespace Framework.Core.Runtime
 {
-    public interface IExecutable { }
+    internal interface IExecutable { }
 }

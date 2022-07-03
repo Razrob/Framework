@@ -1,7 +1,7 @@
 ﻿
 namespace Framework.Core.Runtime
 {
-    public enum ExecutableComponentMethodID
+    internal enum ExecutableComponentMethodID
     {
         OnAttach,
         OnDetach

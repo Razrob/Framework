@@ -5,7 +5,7 @@ using System.Reflection;
 
 namespace Framework.Core.Runtime
 {
-    public class InternalModelInjector : IBootLoadElement
+    internal class InternalModelInjector : IBootLoadElement
     {
         private readonly Dictionary<Type, InternalModel> _models;
         private readonly SystemRegister _systemRegister;
@@ -14,11 +14,11 @@ namespace Framework.Core.Runtime
 
         private const string SaveDirectory = "/InternalModel";
 
-        public IReadOnlyDictionary<Type, InternalModel> Models => _models;
+        internal IReadOnlyDictionary<Type, InternalModel> Models => _models;
 
-        public event FrameworkDelegate<InternalModel> OnModelCreate;
+        internal event FrameworkDelegate<InternalModel> OnModelCreate;
 
-        public InternalModelInjector()
+        internal InternalModelInjector()
         {
             _models = new Dictionary<Type, InternalModel>();
             _systemRegister = LoadElementAdapter<SystemRegister>.Instance;
@@ -100,7 +100,7 @@ namespace Framework.Core.Runtime
             return $"InternalData_{type.Name}";
         }
 
-        public void SaveModel()
+        internal void SaveModel()
         {
             Dictionary<Type, object> savedTypes = new Dictionary<Type, object>();
 

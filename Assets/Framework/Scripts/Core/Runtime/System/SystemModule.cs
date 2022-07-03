@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
@@ -7,21 +6,21 @@ using System.Reflection;
 
 namespace Framework.Core.Runtime
 {
-    public class SystemModule : MonoBehaviour
+    internal class SystemModule : MonoBehaviour
     {
         [SerializeField] [SubTypesFilter(new Type[] { typeof(FSystemFoundation) })] private SerializableType[] _attachedSystemsTypes;
 
         private FSystemFoundation[] _systems;
         private SystemData[] _systemsData;
 
-        public IReadOnlyList<FSystemFoundation> Systems => _systems;
-        public IReadOnlyList<SystemData> SystemsData => _systemsData;
+        internal IReadOnlyList<FSystemFoundation> Systems => _systems;
+        internal IReadOnlyList<SystemData> SystemsData => _systemsData;
 
-        public readonly OrderedExecuteHandler<SystemModule> OnModuleEnable;
-        public readonly OrderedExecuteHandler<SystemModule> OnModuleDisable;
-        public readonly OrderedExecuteHandler<SystemModule> OnModuleDestroy;
+        internal readonly OrderedExecuteHandler<SystemModule> OnModuleEnable;
+        internal readonly OrderedExecuteHandler<SystemModule> OnModuleDisable;
+        internal readonly OrderedExecuteHandler<SystemModule> OnModuleDestroy;
 
-        public SystemModule()
+        internal SystemModule()
         {
             OnModuleDisable = new OrderedExecuteHandler<SystemModule>();
             OnModuleEnable = new OrderedExecuteHandler<SystemModule>();

@@ -5,9 +5,9 @@ using UnityEngine;
 
 namespace Framework.Core.Editor
 {
-    public static class ProjectDllParser
+    internal static class ProjectDllParser
     {
-        public static IReadOnlyList<string> TryParseDllNames()
+        internal static IReadOnlyList<string> TryParseDllNames()
         {
             string solutionPath = Application.dataPath.Substring(0, Application.dataPath.LastIndexOf('/'));
             string[] solutionInfo = File.ReadAllLines(Directory.GetFiles(solutionPath, "*.sln").First());

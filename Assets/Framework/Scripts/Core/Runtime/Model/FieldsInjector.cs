@@ -5,13 +5,13 @@ using System.Linq;
 
 namespace Framework.Core.Runtime
 {
-    public class FieldsInjector : IBootLoadElement
+    internal class FieldsInjector : IBootLoadElement
     {
         private readonly Dictionary<Type, UnityEngine.Object> _injections;
         private readonly SystemRegister _systemRegister;
         private readonly InternalModelInjector _internalModelInjector;
 
-        public FieldsInjector(IEnumerable<UnityEngine.Object> injections)
+        internal FieldsInjector(IEnumerable<UnityEngine.Object> injections)
         {
             _injections = new Dictionary<Type, UnityEngine.Object>(injections.Count());
             _systemRegister = LoadElementAdapter<SystemRegister>.Instance;

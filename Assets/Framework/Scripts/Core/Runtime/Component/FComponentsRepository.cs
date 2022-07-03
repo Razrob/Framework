@@ -1,22 +1,19 @@
-using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 using System;
 using System.Linq;
-using System.Reflection;
 
 namespace Framework.Core.Runtime
 {
-    public class FComponentsRepository : IBootLoadElement
+    internal class FComponentsRepository : IBootLoadElement
     {
         private readonly Dictionary<Type, LinkedList<FComponent>> _components;
 
-        public FComponentsRepository()
+        internal FComponentsRepository()
         {
             _components = new Dictionary<Type, LinkedList<FComponent>>();
         }
 
-        public void AddFComponent(FComponent component)
+        internal void AddFComponent(FComponent component)
         {
             Type componentBaseType = component.GetType();
 
@@ -35,7 +32,7 @@ namespace Framework.Core.Runtime
             }
         }
 
-        public void RemoveFComponent(FComponent component)
+        internal void RemoveFComponent(FComponent component)
         {
             Type componentBaseType = component.GetType();
 
@@ -48,7 +45,7 @@ namespace Framework.Core.Runtime
             }
         }
 
-        public IEnumerable<TComponent> GetFComponents<TComponent>() where TComponent : FComponent
+        internal IEnumerable<TComponent> GetFComponents<TComponent>() where TComponent : FComponent
         {
             if (_components.ContainsKey(typeof(TComponent)))
                 return _components[typeof(TComponent)].Select(value => (TComponent)value);

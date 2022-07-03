@@ -1,18 +1,16 @@
-using System;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace Framework.Core.Runtime
 {
-    public class ExecuteData
+    internal class ExecuteData
     {
         private readonly LinkedList<ExecuteDelegate> _invocationList;
 
-        public readonly int ExecuteOrder;
-        public ExecuteDelegate ExecuteDelegate;
-        public IEnumerable<ExecuteDelegate> InvocationList => _invocationList;
+        internal readonly int ExecuteOrder;
+        internal ExecuteDelegate ExecuteDelegate;
+        internal IEnumerable<ExecuteDelegate> InvocationList => _invocationList;
 
-        public ExecuteData(ExecuteDelegate @delegate, int executeOrder)
+        internal ExecuteData(ExecuteDelegate @delegate, int executeOrder)
         {
             _invocationList = new LinkedList<ExecuteDelegate>();
             ExecuteOrder = executeOrder;
@@ -21,7 +19,7 @@ namespace Framework.Core.Runtime
             _invocationList.AddLast(@delegate);
         }
 
-        public void AddDelegate(ExecuteDelegate @delegate)
+        internal void AddDelegate(ExecuteDelegate @delegate)
         {
             if (!_invocationList.Contains(@delegate))
             {
@@ -30,19 +28,19 @@ namespace Framework.Core.Runtime
             }
         }
 
-        public bool RemoveDelegate(ExecuteDelegate @delegate)
+        internal bool RemoveDelegate(ExecuteDelegate @delegate)
         {
             ExecuteDelegate -= @delegate;
             return _invocationList.Remove(@delegate);
         }
 
-        public void RemoveAllDelegates()
+        internal void RemoveAllDelegates()
         {
             ExecuteDelegate = null;
             _invocationList.Clear();
         }
 
-        public bool RemoveTarget(object target)
+        internal bool RemoveTarget(object target)
         {
             LinkedListNode<ExecuteDelegate> node = _invocationList.First;
 
@@ -62,15 +60,15 @@ namespace Framework.Core.Runtime
         }
     }
 
-    public class ExecuteData<T>
+    internal class ExecuteData<T>
     {
         private readonly LinkedList<ExecuteDelegate<T>> _invocationList;
 
-        public readonly int ExecuteOrder;
-        public ExecuteDelegate<T> ExecuteDelegate;
-        public IEnumerable<ExecuteDelegate<T>> InvocationList => _invocationList;
+        internal readonly int ExecuteOrder;
+        internal ExecuteDelegate<T> ExecuteDelegate;
+        internal IEnumerable<ExecuteDelegate<T>> InvocationList => _invocationList;
 
-        public ExecuteData(ExecuteDelegate<T> @delegate, int executeOrder)
+        internal ExecuteData(ExecuteDelegate<T> @delegate, int executeOrder)
         {
             _invocationList = new LinkedList<ExecuteDelegate<T>>();
             ExecuteOrder = executeOrder;
@@ -79,7 +77,7 @@ namespace Framework.Core.Runtime
             _invocationList.AddLast(@delegate);
         }
 
-        public void AddDelegate(ExecuteDelegate<T> @delegate)
+        internal void AddDelegate(ExecuteDelegate<T> @delegate)
         {
             if (!_invocationList.Contains(@delegate))
             {
@@ -88,18 +86,18 @@ namespace Framework.Core.Runtime
             }
         }
 
-        public bool RemoveDelegate(ExecuteDelegate<T> @delegate)
+        internal bool RemoveDelegate(ExecuteDelegate<T> @delegate)
         {
             ExecuteDelegate -= @delegate;
             return _invocationList.Remove(@delegate);
         }
 
-        public void RemoveAllDelegates()
+        internal void RemoveAllDelegates()
         {
             _invocationList.Clear();
         }
 
-        public bool RemoveTarget(object target)
+        internal bool RemoveTarget(object target)
         {
             LinkedListNode<ExecuteDelegate<T>> node = _invocationList.First;
 

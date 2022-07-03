@@ -5,18 +5,18 @@ using System.Linq;
 
 namespace Framework.Core.Runtime
 {
-    public struct InjectionData
+    internal struct InjectionData
     {
-        public readonly Type DeclaredType;
-        public readonly List<FieldInfo> InjectionFields;
+        internal readonly Type DeclaredType;
+        internal readonly List<FieldInfo> InjectionFields;
 
-        public InjectionData(Type declaredType)
+        internal InjectionData(Type declaredType)
         {
             DeclaredType = declaredType;
             InjectionFields = new List<FieldInfo>();
         }
 
-        public InjectionData(Type declaredType, IEnumerable<FieldInfo> injectionFields)
+        internal InjectionData(Type declaredType, IEnumerable<FieldInfo> injectionFields)
         {
             DeclaredType = declaredType;
             InjectionFields = injectionFields.ToList();

@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
@@ -11,7 +10,7 @@ namespace Framework.Core.Editor
 { 
     [CanEditMultipleObjects]
     [CustomEditor(typeof(FEntityProvider))]
-    public class FEntityProviderEditor : UnityEditor.Editor
+    internal class FEntityProviderEditor : UnityEditor.Editor
     {
         private FEntityProvider _entityProvider;
         private SubTypesFinder _subTypesFinder;
@@ -52,7 +51,7 @@ namespace Framework.Core.Editor
                 Type componentType = typeName is null ? null : Assembly.Load(typeAssemblyName).GetType(typeName);
 
                 if(componentType is null)
-                    Debug.Log($"FComponent in {_entityProvider.gameObject.name} not found. Probably it was renamed");
+                    FrameworkDebuger.Log(Runtime.LogType.Info, $"FComponent in {_entityProvider.gameObject.name} not found. Probably it was renamed");
 
                 FieldInfo[] fieldsInfo = null;
 

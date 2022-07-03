@@ -1,4 +1,3 @@
-using System.Collections;
 using UnityEngine;
 using System;
 
@@ -6,6 +5,19 @@ namespace Framework.Core.Runtime
 {
     public class FrameworkCommander
     {
+        public static T GetCurrentState<T>() where T : struct, Enum
+        {
+            try
+            {
+                return (T)Enum.ToObject(typeof(T), LoadElementAdapter<StateMachine>.Instance.CurrentState);
+            }
+            catch (InvalidCastException)
+            {
+                return (T)FrameworkDebuger.Log(LogType.Exception, 
+                    "[InvalidCastException], FrameworkCommander.GetCurrentState, generic parameter is not a state");
+            }
+        }
+
         public static void SetState(Enum state)
         {
             LoadElementAdapter<StateMachine>.Instance.SetState(state);
@@ -26,6 +38,11 @@ namespace Framework.Core.Runtime
         {
             component.AttachedEntity.RemoveFComponent(component);
             LoadElementAdapter<FComponentsRepository>.Instance.RemoveFComponent(component);
+        }
+
+        public static void SaveModel()
+        {
+            LoadElementAdapter<InternalModelInjector>.Instance.SaveModel();
         }
     }
 }

@@ -5,11 +5,11 @@ using System.Reflection;
 
 namespace Framework.Core.Runtime
 {
-    public static class InjectionsExtractor
+    internal static class InjectionsExtractor
     {
         private static readonly BindingFlags InjectionFlags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public;
 
-        public static IEnumerable<FieldInfo> GetInjectionsData(Type systemType)
+        internal static IEnumerable<FieldInfo> GetInjectionsData(Type systemType)
         {
             IEnumerable<FieldInfo> fields = systemType.GetFields(InjectionFlags)
                 .Where(field => field.GetCustomAttribute(typeof(InjectFieldAttribute)) != null);

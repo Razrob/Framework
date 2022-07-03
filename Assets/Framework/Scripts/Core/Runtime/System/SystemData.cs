@@ -4,16 +4,16 @@ using System.Reflection;
 
 namespace Framework.Core.Runtime
 {
-    public struct SystemData
+    internal struct SystemData
     {
-        public readonly FSystemFoundation System;
-        public readonly Type SystemType;
-        public SystemExecuteData SystemExecuteData;
-        public IEnumerable<FieldInfo> ModelInjectionsFields;
-        public IEnumerable<FieldInfo> InjectionsFields;
-        public IEnumerable<FieldInfo> ComponentSelectorFields;
+        internal readonly FSystemFoundation System;
+        internal readonly Type SystemType;
+        internal SystemExecuteData SystemExecuteData;
+        internal IEnumerable<FieldInfo> ModelInjectionsFields;
+        internal IEnumerable<FieldInfo> InjectionsFields;
+        internal IEnumerable<FieldInfo> ComponentSelectorFields;
 
-        public SystemData(FSystemFoundation systemFoundation, Type type)
+        internal SystemData(FSystemFoundation systemFoundation, Type type)
         {
             System = systemFoundation;
             SystemType = type;

@@ -1,20 +1,18 @@
-using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 using System;
 using System.Reflection;
 using System.Linq;
 
 namespace Framework.Core.Runtime
 {
-    public static class SystemExecuteDataExtractor
+    internal static class SystemExecuteDataExtractor
     {
         private static readonly BindingFlags ExecutableMethodsFlag = BindingFlags.Instance | BindingFlags.NonPublic;
 
-        public static SystemExecuteData GetExecuteData(Type systemType)
+        internal static SystemExecuteData GetExecuteData(Type systemType)
         {
             if (!systemType.IsSubclassOf(typeof(FSystemFoundation)))
-                throw new ArgumentException("Incorrect system type");
+                return (SystemExecuteData)FrameworkDebuger.Log(LogType.Exception, "[ArgumentException], incorrect system type");
 
             string[] executableMethodsNames = Enum.GetNames(typeof(ExecutableSystemMethodID));
 
@@ -39,10 +37,10 @@ namespace Framework.Core.Runtime
             return systemExecuteData;
         }
 
-        public static FrameworkSystemAttribute GetSystemAttribute(Type systemType)
+        internal static FrameworkSystemAttribute GetSystemAttribute(Type systemType)
         {
             if (!systemType.IsSubclassOf(typeof(FSystemFoundation)))
-                throw new ArgumentException("Incorrect system type");
+                return (FrameworkSystemAttribute)FrameworkDebuger.Log(LogType.Exception, "[ArgumentException], incorrect system type");
 
             return systemType.GetCustomAttribute<FrameworkSystemAttribute>();
         }

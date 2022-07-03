@@ -5,18 +5,16 @@ using System.Reflection;
 
 namespace Framework.Core.Editor
 {
-    public class SubTypesFinder
+    internal class SubTypesFinder
     {
-        private IEnumerable<Type> _baseTypes;
-        public IReadOnlyList<Type> SubTypes { get; private set; }
+        internal IReadOnlyList<Type> SubTypes { get; private set; }
 
-        public SubTypesFinder(IEnumerable<Type> baseTypes)
+        internal SubTypesFinder(IEnumerable<Type> baseTypes)
         {
-            _baseTypes = baseTypes;
             SubTypes = FindTypes(baseTypes);
         }
 
-        public static IReadOnlyList<Type> FindTypes(IEnumerable<Type> baseTypes, Assembly specificAssembly)
+        internal static IReadOnlyList<Type> FindTypes(IEnumerable<Type> baseTypes, Assembly specificAssembly)
         {
             if (baseTypes is null)
                 throw new NullReferenceException();
@@ -32,7 +30,7 @@ namespace Framework.Core.Editor
             }).ToArray();
         }
 
-        public static IReadOnlyList<Type> FindTypes(IEnumerable<Type> baseTypes)
+        internal static IReadOnlyList<Type> FindTypes(IEnumerable<Type> baseTypes)
         {
             if (baseTypes is null)
                 throw new NullReferenceException();

@@ -1,17 +1,15 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using System;
 using System.Reflection;
 
 namespace Framework.Core.Runtime
 {
-    public class ComponentsSelectorsInjector : IBootLoadElement
+    internal class ComponentsSelectorsInjector : IBootLoadElement
     {
         private readonly FComponentsRepository _componentsRepository;
         private readonly InternalModelInjector _internalModelInjector;
+        private readonly BindingFlags ConstructorFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
 
-        public ComponentsSelectorsInjector(FComponentsRepository componentsRepository)
+        internal ComponentsSelectorsInjector(FComponentsRepository componentsRepository)
         {
             _componentsRepository = componentsRepository;
 
@@ -33,7 +31,8 @@ namespace Framework.Core.Runtime
             {
                 foreach (FieldInfo field in data.ComponentSelectorFields)
                 {
-                    field.SetValue(data.System, Activator.CreateInstance(field.FieldType, _componentsRepository));
+                    field.SetValue(data.System, Activator.CreateInstance(field.FieldType, 
+                        ConstructorFlags, null, new object[] { _componentsRepository }, null));
                 }
             }
         }
@@ -49,7 +48,8 @@ namespace Framework.Core.Runtime
         private void InjectToModel(object model)
         {
             foreach(FieldInfo selectorField in ComponentSelectorExtractor.GetSelectors(model.GetType()))
-                selectorField.SetValue(model, Activator.CreateInstance(selectorField.FieldType, _componentsRepository));
+                selectorField.SetValue(model, Activator.CreateInstance(selectorField.FieldType,
+                    ConstructorFlags, null, new object[] { _componentsRepository }, null));
         }
 
         public void OnBootLoadComplete() { }

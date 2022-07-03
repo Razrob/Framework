@@ -1,12 +1,12 @@
 
 namespace Framework.Core.Runtime
 {
-    public interface IEventReceiver
+    internal interface IEventReceiver
     {
         public void OnReceive();
     }
 
-    public interface IEventReceiver<T>
+    internal interface IEventReceiver<T>
     {
         public void OnReceive(T arg);
     }

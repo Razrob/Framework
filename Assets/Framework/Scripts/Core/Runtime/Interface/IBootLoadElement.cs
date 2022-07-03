@@ -1,7 +1,7 @@
 
 namespace Framework.Core.Runtime
 {
-    public interface IBootLoadElement 
+    internal interface IBootLoadElement 
     {
         public void OnBootLoadComplete();
     }

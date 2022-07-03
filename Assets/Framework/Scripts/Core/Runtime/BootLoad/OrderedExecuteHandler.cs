@@ -3,11 +3,11 @@ using System.Linq;
 
 namespace Framework.Core.Runtime
 {
-    public class OrderedExecuteHandler
+    internal class OrderedExecuteHandler
     {
         private readonly LinkedList<ExecuteData> _orderedExecuteData = new LinkedList<ExecuteData>();
 
-        public void AddDelegate(ExecuteDelegate @delegate, int order = 0)
+        internal void AddDelegate(ExecuteDelegate @delegate, int order = 0)
         {
             if (_orderedExecuteData.Count == 0)
             {
@@ -42,13 +42,13 @@ namespace Framework.Core.Runtime
             while (node != null);
         }
 
-        public void RemoveDelegate(ExecuteDelegate @delegate)
+        internal void RemoveDelegate(ExecuteDelegate @delegate)
         {
             foreach (ExecuteData executeData in _orderedExecuteData)
                 executeData.RemoveDelegate(@delegate);
         }
 
-        public void RemoveAllDelegates()
+        internal void RemoveAllDelegates()
         {
             foreach (ExecuteData executeData in _orderedExecuteData)
                 executeData.RemoveAllDelegates();
@@ -56,31 +56,31 @@ namespace Framework.Core.Runtime
             _orderedExecuteData.Clear();
         }
 
-        public void RemoveTarget(IExecutable target)
+        internal void RemoveTarget(IExecutable target)
         {
             RemoveTargets(new IExecutable[] { target });
         }
 
-        public void RemoveTargets(IEnumerable<IExecutable> targets)
+        internal void RemoveTargets(IEnumerable<IExecutable> targets)
         {
             foreach (ExecuteData executeData in _orderedExecuteData)
                 foreach (IExecutable target in targets)
                     executeData.RemoveTarget(target);
         }
 
-        public void Execute()
+        internal void Execute()
         {
             foreach (ExecuteData executeData in _orderedExecuteData)
                 foreach (ExecuteDelegate @delegate in executeData.InvocationList)
                     @delegate.Invoke();
         }
 
-        public void ExecuteSpecific(IExecutable target)
+        internal void ExecuteSpecific(IExecutable target)
         {
             ExecuteSpecific(new IExecutable[] { target });
         }
 
-        public void ExecuteSpecific(IEnumerable<IExecutable> targets)
+        internal void ExecuteSpecific(IEnumerable<IExecutable> targets)
         {
             foreach (ExecuteData executeData in _orderedExecuteData)
             {
@@ -95,11 +95,11 @@ namespace Framework.Core.Runtime
         }
     }
 
-    public class OrderedExecuteHandler<T>
+    internal class OrderedExecuteHandler<T>
     {
         private readonly LinkedList<ExecuteData<T>> _orderedExecuteData = new LinkedList<ExecuteData<T>>();
 
-        public void AddDelegate(ExecuteDelegate<T> @delegate, int order = 0)
+        internal void AddDelegate(ExecuteDelegate<T> @delegate, int order = 0)
         {
             if (_orderedExecuteData.Count == 0)
             {
@@ -134,13 +134,13 @@ namespace Framework.Core.Runtime
             while (node != null);
         }
 
-        public void RemoveDelegate(ExecuteDelegate<T> @delegate)
+        internal void RemoveDelegate(ExecuteDelegate<T> @delegate)
         {
             foreach (ExecuteData<T> executeData in _orderedExecuteData)
                 executeData.RemoveDelegate(@delegate);
         }
 
-        public void RemoveAllDelegates()
+        internal void RemoveAllDelegates()
         {
             foreach (ExecuteData<T> executeData in _orderedExecuteData)
                 executeData.RemoveAllDelegates();
@@ -148,30 +148,30 @@ namespace Framework.Core.Runtime
             _orderedExecuteData.Clear();
         }
 
-        public void RemoveTarget(IExecutable target)
+        internal void RemoveTarget(IExecutable target)
         {
             RemoveTargets(new IExecutable[] { target });
         }
 
-        public void RemoveTargets(IEnumerable<IExecutable> targets)
+        internal void RemoveTargets(IEnumerable<IExecutable> targets)
         {
             foreach (ExecuteData<T> executeData in _orderedExecuteData)
                 foreach (IExecutable target in targets)
                     executeData.RemoveTarget(target);
         }
 
-        public void Execute(T arg)
+        internal void Execute(T arg)
         {
             foreach (ExecuteData<T> executeData in _orderedExecuteData)
                 executeData.ExecuteDelegate?.Invoke(arg);
         }
 
-        public void ExecuteSpecific(T arg, IExecutable target)
+        internal void ExecuteSpecific(T arg, IExecutable target)
         {
             ExecuteSpecific(arg, new IExecutable[] { target });
         }
 
-        public void ExecuteSpecific(T arg, IEnumerable<IExecutable> targets)
+        internal void ExecuteSpecific(T arg, IEnumerable<IExecutable> targets)
         {
             foreach (ExecuteData<T> executeData in _orderedExecuteData)
             {

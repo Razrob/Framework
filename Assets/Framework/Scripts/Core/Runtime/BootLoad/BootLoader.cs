@@ -1,8 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using System;
-using System.Reflection;
 
 namespace Framework.Core.Runtime
 {
@@ -11,6 +8,8 @@ namespace Framework.Core.Runtime
     {
         [SerializeField][SubTypesFilter(new Type[] { typeof(Enum) })] private SerializableType _statesEnum;
         [SerializeField] private UnityEngine.Object[] _injections;
+
+        public const string Version = "0.5f";
 
         private StatesPreset _statesPreset;
         private SystemExecuteRepository _systemExecuteRepository;

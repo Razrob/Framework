@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using System;
@@ -10,7 +8,7 @@ using Framework.Core.Runtime;
 namespace Framework.Core.Editor
 {
     [CustomPropertyDrawer(typeof(SerializableType), true)]
-    public class SerializableTypeDrawer : PropertyDrawer
+    internal class SerializableTypeDrawer : PropertyDrawer
     {
         private SubTypesFinder _subTypesFinder;
         private string[] _subTypesNamesArray;
@@ -22,6 +20,7 @@ namespace Framework.Core.Editor
         private int _selectedType;
 
         private const string FieldName = "_typeName";
+        private const string AssemblyName = "_assemblyName";
         private const string UndefinedName = "Undefined";
 
         private DropDownTypesWindow window;
@@ -71,9 +70,13 @@ namespace Framework.Core.Editor
             window.OnTypeSelect += type =>
             {
                 SerializedProperty typeName = property.FindPropertyRelative(FieldName);
+                SerializedProperty assemblyName = property.FindPropertyRelative(AssemblyName);
                 typeName.serializedObject.Update();
+                assemblyName.serializedObject.Update();
                 typeName.stringValue = type?.Name;
+                assemblyName.stringValue = type?.Assembly.FullName;
                 typeName.serializedObject.ApplyModifiedProperties();
+                assemblyName.serializedObject.ApplyModifiedProperties();
 
                 window.Close();
             };

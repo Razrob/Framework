@@ -1,11 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using System;
 
 namespace Framework.Core.Editor
 {
-    public class DropDownTypesWindow : DropDownWindowBase<Type>
+    internal class DropDownTypesWindow : DropDownWindowBase<Type>
     {
         protected override float MaxWindowHeight => 250f;
         protected override float MinWindowHeight => 250f;

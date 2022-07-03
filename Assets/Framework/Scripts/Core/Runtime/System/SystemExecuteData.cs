@@ -1,23 +1,20 @@
-using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
-using System;
 using System.Reflection;
 
 namespace Framework.Core.Runtime
 {
-    public struct SystemExecuteData
+    internal struct SystemExecuteData
     {
-        public IEnumerable<SystemMethodData> MethodsData;
-        public FrameworkSystemAttribute FrameworkSystemAttribute;
+        internal IEnumerable<SystemMethodData> MethodsData;
+        internal FrameworkSystemAttribute FrameworkSystemAttribute;
     }
 
-    public struct SystemMethodData
+    internal struct SystemMethodData
     {
-        public MethodInfo MethodInfo;
-        public ExecutableAttribute ExecutableAttribute;
+        internal MethodInfo MethodInfo;
+        internal ExecutableAttribute ExecutableAttribute;
 
-        public SystemMethodData(MethodInfo methodInfo, ExecutableAttribute executableAttribute)
+        internal SystemMethodData(MethodInfo methodInfo, ExecutableAttribute executableAttribute)
         {
             MethodInfo = methodInfo;
             ExecutableAttribute = executableAttribute;

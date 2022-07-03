@@ -1,18 +1,17 @@
-﻿using UnityEngine;
-using System.Reflection;
+﻿using System.Reflection;
 using System.Collections.Generic;
 using UnityEditor;
 
 namespace Framework.Core.Editor
 {
-    public class DllNamesFinder
+    internal class DllNamesFinder
     {
         private static List<Assembly> _solutionDlls;
-        public static IReadOnlyList<Assembly> SolutionDlls => _solutionDlls;
+        internal static IReadOnlyList<Assembly> SolutionDlls => _solutionDlls;
 
         [InitializeOnLoadMethod]
         private static void OnRecompile()
-        { 
+        {
             _solutionDlls = new List<Assembly>();
             IReadOnlyList<string> dllNames = ProjectDllParser.TryParseDllNames();
 
@@ -25,6 +24,9 @@ namespace Framework.Core.Editor
 
                 _solutionDlls.Add(assembly);
             }
+            UnityEngine.Debug.Log(_solutionDlls.Count);
+            foreach(Assembly assembly in _solutionDlls)
+                UnityEngine.Debug.Log(assembly.FullName);
         }
     } 
 }

@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using System;
 using System.Reflection;
@@ -7,16 +5,16 @@ using System.Reflection;
 namespace Framework.Core.Runtime
 {
     [Serializable]
-    public class FComponentProvider
+    internal class FComponentProvider
     {
         [SerializeReference] private FComponent _component;
         [SerializeReference] private string _componentType;
         [SerializeReference] private string _componentTypeAssemblyName;
 
-        public FComponent Component => _component;
-        public Type ComponentType => Assembly.Load(_componentTypeAssemblyName).GetType(_componentType);
+        internal FComponent Component => _component;
+        internal Type ComponentType => Assembly.Load(_componentTypeAssemblyName).GetType(_componentType);
 
-        public FComponentProvider(Type componentType, Assembly typeAssembly, FComponent component)
+        internal FComponentProvider(Type componentType, Assembly typeAssembly, FComponent component)
         {
             _component = component;
             _componentType = componentType.FullName;

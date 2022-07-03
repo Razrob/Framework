@@ -1,12 +1,8 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using System;
-using System.Reflection;
+﻿using System.Collections.Generic;
 
 namespace Framework.Core.Runtime
 {
-    public class SystemLauncher : IBootLoadElement, IEventReceiver<ExecutableSystemMethodID>
+    internal class SystemLauncher : IBootLoadElement, IEventReceiver<ExecutableSystemMethodID>
     {
         private readonly SystemExecuteRepository _systemExecuteRepository;
         private readonly StateMachine _stateMachine;
@@ -16,7 +12,7 @@ namespace Framework.Core.Runtime
         private readonly ExecutableSystemMethodID[] _initializeMethodsEnabled;
         private readonly ExecutableSystemMethodID[] _initializeMethodsDisabed;
 
-        public SystemLauncher(SystemExecuteRepository systemExecuteRepository)
+        internal SystemLauncher(SystemExecuteRepository systemExecuteRepository)
         {
             _systemExecuteRepository = systemExecuteRepository;
             _stateMachine = LoadElementAdapter<StateMachine>.Instance;

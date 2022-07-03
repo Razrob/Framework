@@ -1,28 +1,26 @@
 using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using System;
 using System.Reflection;
 
 namespace Framework.Core.Runtime
 {
-    public class FEntityRegister : IBootLoadElement
+    internal class FEntityRegister : IBootLoadElement
     {
         private readonly FComponentsRepository _componentsRepository;
 
-        public FEntityRegister(out FComponentsRepository componentsRepository)
+        internal FEntityRegister(out FComponentsRepository componentsRepository)
         {
             _componentsRepository = componentsRepository = new FComponentsRepository();
         }
 
-        public void RegisterFEntity(FEntityProvider entityProvider)
+        internal void RegisterFEntity(FEntityProvider entityProvider)
         {
             FEntity entity = new FEntity(entityProvider);
             FieldInfo attachedFEntityField = FComponentsFieldsExtractor.GetAttachedFEntityFieldInfo();
             MethodInfo onAttachMethodInfo = FComponentsFieldsExtractor.GetExecutableComponentMethodInfo(ExecutableComponentMethodID.OnAttach);
 
             FieldInfo instantiatedEntityField = typeof(FEntityProvider).GetField(nameof(FEntityProvider.InstantiatedEntity),
-                BindingFlags.Instance | BindingFlags.Public);
+                BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
 
             instantiatedEntityField.SetValue(entityProvider, entity);
 
@@ -38,7 +36,7 @@ namespace Framework.Core.Runtime
             entityProvider.StartCoroutine(DestroyEntityProvider(entityProvider));
         }
 
-        public void UnregisterFEntity(FEntity entity)
+        internal void UnregisterFEntity(FEntity entity)
         {
             entity.OnFComponentAdd -= _componentsRepository.AddFComponent;
             entity.OnFComponentRemove -= _componentsRepository.RemoveFComponent;

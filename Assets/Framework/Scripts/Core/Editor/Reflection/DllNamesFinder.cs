@@ -24,9 +24,6 @@ namespace Framework.Core.Editor
 
                 _solutionDlls.Add(assembly);
             }
-            UnityEngine.Debug.Log(_solutionDlls.Count);
-            foreach(Assembly assembly in _solutionDlls)
-                UnityEngine.Debug.Log(assembly.FullName);
         }
     } 
 }

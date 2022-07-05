@@ -44,5 +44,10 @@ namespace Framework.Core.Runtime
         {
             LoadElementAdapter<InternalModelInjector>.Instance.SaveModel();
         }
+
+        public static void SaveModel<TModel>() where TModel : InternalModel
+        {
+            LoadElementAdapter<InternalModelInjector>.Instance.SaveModel(typeof(TModel));
+        }
     }
 }

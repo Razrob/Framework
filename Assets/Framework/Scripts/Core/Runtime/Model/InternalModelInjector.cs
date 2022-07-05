@@ -12,7 +12,7 @@ namespace Framework.Core.Runtime
 
         private readonly MethodInfo _onInjectMethodInfo;
 
-        private const string SaveDirectory = "/InternalModel";
+        private const string SaveDirectory = "InternalModel";
 
         internal IReadOnlyDictionary<Type, InternalModel> Models => _models;
 
@@ -65,7 +65,7 @@ namespace Framework.Core.Runtime
             }
             else
             {
-                InternalModel value = DataLoader.Load(FormFileName(modelField.FieldType), SaveDirectory) as InternalModel;
+                InternalModel value = DataLoader.Load(FormFileName(modelField.FieldType), modelField.FieldType) as InternalModel;
 
                 if (value is null)
                     value = Activator.CreateInstance(modelField.FieldType) as InternalModel;
@@ -79,15 +79,7 @@ namespace Framework.Core.Runtime
 
         private bool ModelTypeIsValid(Type modelType)
         {
-            while(modelType != null)
-            {
-                if (modelType == typeof(InternalModel))
-                    return true;
-
-                modelType = modelType.BaseType;
-            }
-
-            return false;
+            return modelType.IsSubclassOf(typeof(InternalModel));
         }
 
         private void TryUnloadModel(SystemModule systemModule)
@@ -97,12 +89,12 @@ namespace Framework.Core.Runtime
 
         private string FormFileName(Type type)
         {
-            return $"InternalData_{type.Name}";
+            return $"{SaveDirectory}/InternalData_{type.Name}";
         }
 
-        internal void SaveModel()
+        internal void SaveModel(Type targetModelType = null)
         {
-            Dictionary<Type, object> savedTypes = new Dictionary<Type, object>();
+            HashSet<Type> savedTypes = new HashSet<Type>();
 
             foreach (SystemModule module in _systemRegister.RegisteredModules)
             {
@@ -112,11 +104,14 @@ namespace Framework.Core.Runtime
                     {
                         InternalModelAttribute modelAttribute = field.GetCustomAttribute<InternalModelAttribute>();
 
-                        if (!modelAttribute.SaveAllow || savedTypes.ContainsKey(field.FieldType))
+                        if (targetModelType != null && field.FieldType != targetModelType)
                             continue;
 
-                        savedTypes.Add(field.FieldType, new object());
-                        DataSaver.Save(field.GetValue(data.System), FormFileName(field.FieldType), SaveDirectory);
+                        if (!modelAttribute.SaveAllow || savedTypes.Contains(field.FieldType))
+                            continue;
+
+                        savedTypes.Add(field.FieldType);
+                        DataSaver.Save(field.GetValue(data.System), FormFileName(field.FieldType));
                     }
                 }
             }

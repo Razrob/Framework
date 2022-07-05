@@ -48,10 +48,7 @@ namespace Framework.Core.Runtime
             InjectModel(field, declaredOnject);
 
             foreach (FieldInfo sytemExcludedModelField in InternalModelExtractor.GetInternalModelData(field.FieldType))
-            { 
-                InjectModel(sytemExcludedModelField, _models[field.FieldType]);
                 ScanAndInjectInternalModelTypes(sytemExcludedModelField, _models[field.FieldType]);
-            }
         }
 
         private void InjectModel(FieldInfo modelField, object declaredObject)
@@ -72,7 +69,6 @@ namespace Framework.Core.Runtime
 
                 _models.Add(modelField.FieldType, value);
                 modelField.SetValue(declaredObject, _models[modelField.FieldType]);
-
                 OnModelCreate?.Invoke(value);
             }
         }
@@ -102,19 +98,41 @@ namespace Framework.Core.Runtime
                 {
                     foreach (FieldInfo field in data.ModelInjectionsFields)
                     {
-                        InternalModelAttribute modelAttribute = field.GetCustomAttribute<InternalModelAttribute>();
-
                         if (targetModelType != null && field.FieldType != targetModelType)
-                            continue;
+                            return;
 
-                        if (!modelAttribute.SaveAllow || savedTypes.Contains(field.FieldType))
-                            continue;
-
-                        savedTypes.Add(field.FieldType);
-                        DataSaver.Save(field.GetValue(data.System), FormFileName(field.FieldType));
+                        ScanAndSaveModelTypes(field, _models[field.FieldType], ref savedTypes);
                     }
                 }
             }
+        }
+
+        private void ScanAndSaveModelTypes(FieldInfo fieldInfo, object @object, ref HashSet<Type> savedTypes)
+        {
+            SaveModelType(fieldInfo, @object, ref savedTypes);
+            
+            foreach (FieldInfo sytemExcludedModelField in InternalModelExtractor.GetInternalModelData(fieldInfo.FieldType))
+                ScanAndSaveModelTypes(sytemExcludedModelField, _models[sytemExcludedModelField.FieldType], ref savedTypes);
+        }
+
+        private void SaveModelType(FieldInfo fieldInfo, object declaredObject, ref HashSet<Type> savedTypes)
+        {
+            InternalModelAttribute modelAttribute = fieldInfo.FieldType.GetCustomAttribute<InternalModelAttribute>();
+
+            if (!modelAttribute.SaveAllow || savedTypes.Contains(fieldInfo.FieldType))
+                return;
+
+            //if (declaredObject is AAAModel)
+            //    Debug.Log("AAA " + (declaredObject as AAAModel).value);
+
+            //if (declaredObject is BBBModel)
+            //    Debug.Log("BBB " + (declaredObject as BBBModel).value);
+
+            //if (declaredObject is CCModel)
+            //    Debug.Log("CCC " + (declaredObject as CCModel).value);
+
+            savedTypes.Add(fieldInfo.FieldType);
+            DataSaver.Save(declaredObject, FormFileName(fieldInfo.FieldType));
         }
 
         public void OnBootLoadComplete() 

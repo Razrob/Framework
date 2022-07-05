@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
-using System.IO;
+using Framework.Core.Runtime;
 using System.Linq;
 using UnityEngine;
+using System.IO;
 
 namespace Framework.Core.Editor
 {
@@ -10,7 +11,13 @@ namespace Framework.Core.Editor
         internal static IReadOnlyList<string> TryParseDllNames()
         {
             string solutionPath = Application.dataPath.Substring(0, Application.dataPath.LastIndexOf('/'));
-            string[] solutionInfo = File.ReadAllLines(Directory.GetFiles(solutionPath, "*.sln").First());
+
+            string[] slnFilesPaths = Directory.GetFiles(solutionPath, "*.sln");
+
+            if (slnFilesPaths.Length is 0)
+                FrameworkDebuger.Log(Runtime.LogType.Exception, ".sln file not found in root folder of the project");
+
+            string[] solutionInfo = File.ReadAllLines(slnFilesPaths.OrderBy(path => File.GetLastWriteTime(path).Ticks).Last());
 
             List<string> dllNames = new List<string>();
 

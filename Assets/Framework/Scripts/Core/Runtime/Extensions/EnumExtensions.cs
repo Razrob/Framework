@@ -1,9 +1,12 @@
 using System;
 
-public static class EnumExtensions
+namespace Framework.Core.Runtime
 {
-    public static T ToEnum<T>(this string value) where T : Enum
+    public static class EnumExtensions
     {
-        return (T)Enum.Parse(typeof(T), value);
-    } 
+        public static T ToEnum<T>(this string value) where T : Enum
+        {
+            return (T)Enum.Parse(typeof(T), value);
+        }
+    }
 }

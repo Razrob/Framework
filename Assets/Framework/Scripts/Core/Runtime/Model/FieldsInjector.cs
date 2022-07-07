@@ -2,6 +2,7 @@
 using System;
 using System.Reflection;
 using System.Linq;
+using System.Collections;
 
 namespace Framework.Core.Runtime
 {
@@ -48,7 +49,8 @@ namespace Framework.Core.Runtime
         {
             foreach (Type modelType in _internalModelInjector.Models.Keys)
             {
-                InjectToModel(_internalModelInjector.Models[modelType]);
+                //InjectToModel(_internalModelInjector.Models[modelType]);
+                ScanAndTryInjectToModelsCollections(_internalModelInjector.Models[modelType]);
             }
         }
 
@@ -57,6 +59,25 @@ namespace Framework.Core.Runtime
             foreach (FieldInfo injectionField in InjectionsExtractor.GetInjectionsData(model.GetType()))
                 if(_injections.ContainsKey(injectionField.FieldType))
                     injectionField.SetValue(model, _injections[injectionField.FieldType]);
+        }
+        private void ScanAndTryInjectToModelsCollections(object @object)
+        {
+            Type type = @object.GetType();
+            IEnumerable<FieldInfo> modelsCollectionsFields = InternalModelExtractor.GetModelsCollections(type);
+
+            if (type.IsSubclassOf(typeof(InternalModel)))
+                InjectToModel(@object);
+
+            foreach (FieldInfo modelsCollectionsField in modelsCollectionsFields)
+            {
+                IEnumerable collection = modelsCollectionsField.GetValue(@object) as IEnumerable;
+
+                if (collection is null)
+                    continue;
+
+                foreach (object element in collection)
+                    ScanAndTryInjectToModelsCollections(element);
+            }
         }
 
         private void TryUnloadInjections(SystemModule systemModule)

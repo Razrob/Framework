@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using System.Reflection;
+using System.Collections;
 
 namespace Framework.Core.Runtime
 {
@@ -18,18 +19,27 @@ namespace Framework.Core.Runtime
 
         internal event FrameworkDelegate<InternalModel> OnModelCreate;
 
-        internal InternalModelInjector()
+        internal InternalModelInjector(IReadOnlyList<Type> modelsToInitializeIntermediate = null)
         {
             _models = new Dictionary<Type, InternalModel>();
             _systemRegister = LoadElementAdapter<SystemRegister>.Instance;
 
             _onInjectMethodInfo = InternalModelExtractor.GetOnInjectMethodInfo();
 
+            if(modelsToInitializeIntermediate != null)
+                CreateModelIntermediate(modelsToInitializeIntermediate);
+
             foreach (SystemModule systemModule in _systemRegister.RegisteredModules)
                 InjectModel(systemModule);
 
             _systemRegister.OnModuleRegister += InjectModel;
             _systemRegister.OnModuleUnregister += TryUnloadModel;
+        }
+
+        private void CreateModelIntermediate(IReadOnlyList<Type> modelsToInitializeIntermediate)
+        {
+            foreach (Type modelType in modelsToInitializeIntermediate)
+                _models.Add(modelType, (InternalModel)Activator.CreateInstance(modelType));
         }
 
         private void InjectModel(SystemModule systemModule)
@@ -122,23 +132,37 @@ namespace Framework.Core.Runtime
             if (!modelAttribute.SaveAllow || savedTypes.Contains(fieldInfo.FieldType))
                 return;
 
-            //if (declaredObject is AAAModel)
-            //    Debug.Log("AAA " + (declaredObject as AAAModel).value);
-
-            //if (declaredObject is BBBModel)
-            //    Debug.Log("BBB " + (declaredObject as BBBModel).value);
-
-            //if (declaredObject is CCModel)
-            //    Debug.Log("CCC " + (declaredObject as CCModel).value);
-
             savedTypes.Add(fieldInfo.FieldType);
             DataSaver.Save(declaredObject, FormFileName(fieldInfo.FieldType));
         }
 
         public void OnBootLoadComplete() 
         {
-            foreach(InternalModel model in _models.Values)
+            foreach (InternalModel model in _models.Values)
+            {
                 _onInjectMethodInfo.Invoke(model, null);
+                ScanAndTryCallInjectMethod(model);
+            }
+        }
+
+        private void ScanAndTryCallInjectMethod(object @object)
+        {
+            Type type = @object.GetType();
+            IEnumerable<FieldInfo> modelsCollectionsFields = InternalModelExtractor.GetModelsCollections(type);
+
+            if (type.IsSubclassOf(typeof(InternalModel)) && !_models.ContainsKey(type))
+                _onInjectMethodInfo.Invoke(@object, null);
+
+            foreach (FieldInfo modelsCollectionsField in modelsCollectionsFields)
+            {
+                IEnumerable collection = modelsCollectionsField.GetValue(@object) as IEnumerable;
+
+                if (collection is null)
+                    continue;
+
+                foreach (object element in collection)
+                    ScanAndTryCallInjectMethod(element);
+            }
         }
     }
 }

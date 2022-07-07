@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -26,6 +27,19 @@ namespace Framework.Core.Runtime
         internal static MethodInfo GetOnInjectMethodInfo()
         {
             return InternalModelType.GetMethod(OnInjectMethodName, ModelFlags);
+        }
+
+        internal static IEnumerable<FieldInfo> GetModelsCollections(Type type)
+        {
+            IEnumerable<FieldInfo> collectionsFields = type.GetFields(ModelFlags)
+                .Where(field => field.GetCustomAttribute(typeof(InjectModelAttribute)) != null && 
+                field.FieldType.GetInterface(typeof(IEnumerable).FullName) != null && 
+                field.FieldType.IsGenericType);
+
+            if (type.BaseType is null)
+                return collectionsFields;
+
+            return collectionsFields.Concat(GetModelsCollections(type.BaseType));
         }
     }
 }

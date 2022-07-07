@@ -1,12 +1,15 @@
 using UnityEngine;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Framework.Core.Runtime
 {
-    [DefaultExecutionOrder(-500)]
+    [DefaultExecutionOrder(-1000)]
     public class BootLoader : MonoBehaviour, IBootLoadElement
     {
-        [SerializeField][SubTypesFilter(new Type[] { typeof(Enum) })] private SerializableType _statesEnum;
+        [SerializeField] [SubTypesFilter(new Type[] { typeof(Enum) })] private SerializableType _statesEnum;
+        [SerializeField] [SubTypesFilter(new Type[] { typeof(InternalModel) })] private SerializableType[] _modelsToInitializeIntermediate;
         [SerializeField] private UnityEngine.Object[] _injections;
 
         public const string Version = "0.5f";
@@ -40,11 +43,14 @@ namespace Framework.Core.Runtime
 
             _entityRegister = LoadElementAdapter<FEntityRegister>.Initialize(new FEntityRegister(out _componentsRepository));
             LoadElementAdapter<FComponentsRepository>.Initialize(_componentsRepository);
+
+            FrameworkEventCommander.Initialize();
         }
 
         private void Start()
         {
-            _modelInjector = LoadElementAdapter<InternalModelInjector>.Initialize(new InternalModelInjector());
+            _modelInjector = LoadElementAdapter<InternalModelInjector>
+                .Initialize(new InternalModelInjector(_modelsToInitializeIntermediate.Select(type => type.Type).ToArray()));
             _componentInjector = LoadElementAdapter<ComponentsSelectorsInjector>.Initialize(new ComponentsSelectorsInjector(_componentsRepository));
             _fieldsInjector = LoadElementAdapter<FieldsInjector>.Initialize(new FieldsInjector(_injections));
 

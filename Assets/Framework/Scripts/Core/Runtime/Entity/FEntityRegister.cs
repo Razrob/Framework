@@ -8,6 +8,12 @@ namespace Framework.Core.Runtime
     {
         private readonly FComponentsRepository _componentsRepository;
 
+        private readonly FEvent<FEntity> _onFEntityRegister = new FEvent<FEntity>();
+        private readonly FEvent<FComponent> _onFComponentRegister = new FEvent<FComponent>();
+
+        internal IEventListener<FEntity> OnFEntityRegister => _onFEntityRegister;
+        internal IEventListener<FComponent> OnFComponentRegister => _onFComponentRegister;
+
         internal FEntityRegister(out FComponentsRepository componentsRepository)
         {
             _componentsRepository = componentsRepository = new FComponentsRepository();
@@ -17,6 +23,7 @@ namespace Framework.Core.Runtime
         {
             FEntity entity = new FEntity(entityProvider);
             FieldInfo attachedFEntityField = FComponentsFieldsExtractor.GetAttachedFEntityFieldInfo();
+            FieldInfo fcompoentnTypeField = FComponentsFieldsExtractor.GetFComponentTypeFieldInfo();
             MethodInfo onAttachMethodInfo = FComponentsFieldsExtractor.GetExecutableComponentMethodInfo(ExecutableComponentMethodID.OnAttach);
 
             FieldInfo instantiatedEntityField = typeof(FEntityProvider).GetField(nameof(FEntityProvider.InstantiatedEntity),
@@ -28,11 +35,16 @@ namespace Framework.Core.Runtime
             {
                 FComponent component = entity.FComponents[componentType];
                 attachedFEntityField.SetValue(component, entity);
+                fcompoentnTypeField.SetValue(component, componentType);
             }
 
             foreach (FComponent component in entity.FComponents.Values)
+            {
                 onAttachMethodInfo.Invoke(component, new object[] { entity });
+                _onFComponentRegister.Invoke(component);
+            }
 
+            _onFEntityRegister.Invoke(entity);
             entityProvider.StartCoroutine(DestroyEntityProvider(entityProvider));
         }
 

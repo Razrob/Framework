@@ -12,10 +12,16 @@ namespace Framework.Core.Runtime
 
         private static readonly Type FComponentType = typeof(FComponent);
         private static readonly string AttachedFEntityFieldName = nameof(FComponent.AttachedEntity);
+        private static readonly string FComponentTypeFieldName = nameof(FComponent.FComponentType);
 
         internal static FieldInfo GetAttachedFEntityFieldInfo()
         {
             return FComponentType.GetField(AttachedFEntityFieldName, FieldsFlags);
+        }
+
+        internal static FieldInfo GetFComponentTypeFieldInfo()
+        {
+            return FComponentType.GetField(FComponentTypeFieldName, FieldsFlags);
         }
 
         internal static IEnumerable<MethodInfo> GetExecutableComponentMethodsInfo()

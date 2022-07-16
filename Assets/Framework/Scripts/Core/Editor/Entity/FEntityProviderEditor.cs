@@ -18,7 +18,10 @@ namespace Framework.Core.Editor
 
         private const float AppendButtonHeigth = 35f;
         private const float AppendButtonWidth = 230f;
+
         private const string EntityBinderName = "_entityBinders";
+        private const string InitializationMethodName = "_initializationMethod";
+
         private const string ComponentFieldName = "_component";
         private const string ComponentProvidersArrayName = "_componentProviders";
         private const string ComponentTypeString = "_componentType";
@@ -41,6 +44,7 @@ namespace Framework.Core.Editor
             CutList(ref _showedElements, componentProvidersArrayProperty.arraySize, true);
 
             EditorGUILayout.PropertyField(serializedObject.FindProperty(EntityBinderName));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty(InitializationMethodName));
 
             for (int i = 0; i < componentProvidersArrayProperty.arraySize; i++)
             {

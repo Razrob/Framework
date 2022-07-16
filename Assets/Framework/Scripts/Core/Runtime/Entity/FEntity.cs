@@ -45,11 +45,12 @@ namespace Framework.Core.Runtime
             foreach (Type binderType in entityProvider.BindersTypes)
             {
                 Type baseBinderType = binderType;
+                IEntityBinder binder = (IEntityBinder)AttachedGameObject.AddComponent(binderType);
 
                 while (baseBinderType != typeof(MonoBehaviour) && baseBinderType != typeof(object) && baseBinderType != null)
                 {
-                    _entityBinders.Add(binderType, (IEntityBinder)AttachedGameObject.AddComponent(binderType));
-                    _entityBinders[binderType].BindEntity(this);
+                    _entityBinders.Add(baseBinderType, binder);
+                    _entityBinders[baseBinderType].BindEntity(this);
                     baseBinderType = baseBinderType.BaseType;
                 }
             }

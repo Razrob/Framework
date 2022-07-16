@@ -1,21 +1,20 @@
-﻿using System;
-
+﻿
 namespace Framework.Core.Runtime
 {
     public class FrameworkEventCommander
     {
-        private static readonly FEvent<FEntity> _onFEntityRegister = new FEvent<FEntity>();
-        private static readonly FEvent<FComponent> _onFComponentRegister = new FEvent<FComponent>();
+        private static FEntityRegister _entityRegister;
 
-        public static IEventListener<FEntity> OnFEntityRegister;
-        public static IEventListener<FComponent> OnFComponentRegister;
+        private static readonly FEvent<FEntity> _onFEntityRegister = new FEvent<FEntity>();
+        public static IEventListener<FEntity> OnFEntityRegister => _onFEntityRegister;
 
         internal static void Initialize()
         {
-            FEntityRegister entityRegister = LoadElementAdapter<FEntityRegister>.Instance;
+            _entityRegister = LoadElementAdapter<FEntityRegister>.Instance;
 
-            entityRegister.OnFEntityRegister.AddListener(entity => _onFEntityRegister.Invoke(entity));
-            entityRegister.OnFComponentRegister.AddListener(component => _onFComponentRegister.Invoke(component));
+            _entityRegister.OnFEntityRegister.AddListener(entity => _onFEntityRegister.Invoke(entity));
         }
+
+        public static IEventListener<FComponent> GetFComponentRegisterEvent<TFComponent>() => _entityRegister.GetFComponentRegisterEvent<TFComponent>();
     }
 }

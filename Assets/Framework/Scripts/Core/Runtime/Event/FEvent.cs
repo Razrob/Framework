@@ -9,12 +9,17 @@ namespace Framework.Core.Runtime
         public IDisposable AddListener(Action action)
         {
             _invokationList += action;
-            return new FEventUnsubscribeHanler(ref _invokationList, ref action);
+            return new FEventUnsubscribeHandler(ref _invokationList, ref action);
         }
 
         public void RemoveListener(Action action)
         {
             _invokationList -= action;
+        }
+
+        public void Clear()
+        {
+            _invokationList = null;
         }
 
         public void Invoke()
@@ -30,12 +35,17 @@ namespace Framework.Core.Runtime
         public IDisposable AddListener(Action<TArg> action)
         {
             _invokationList += action;
-            return new FEventUnsubscribeHanler<TArg>(ref _invokationList, ref action);
+            return new FEventUnsubscribeHandler<TArg>(ref _invokationList, ref action);
         }
 
         public void RemoveListener(Action<TArg> action)
         {
             _invokationList -= action;
+        }
+
+        public void Clear()
+        {
+            _invokationList = null;
         }
 
         public void Invoke(TArg arg)
@@ -51,12 +61,17 @@ namespace Framework.Core.Runtime
         public IDisposable AddListener(Action<TArg1, TArg2> action)
         {
             _invokationList += action;
-            return new FEventUnsubscribeHanler<TArg1, TArg2>(ref _invokationList, ref action);
+            return new FEventUnsubscribeHandler<TArg1, TArg2>(ref _invokationList, ref action);
         }
 
         public void RemoveListener(Action<TArg1, TArg2> action)
         {
             _invokationList -= action;
+        }
+
+        public void Clear()
+        {
+            _invokationList = null;
         }
 
         public void Invoke(TArg1 arg1, TArg2 arg2)
@@ -72,12 +87,17 @@ namespace Framework.Core.Runtime
         public IDisposable AddListener(Action<TArg1, TArg2, TArg3> action)
         {
             _invokationList += action;
-            return new FEventUnsubscribeHanler<TArg1, TArg2, TArg3>(ref _invokationList, ref action);
+            return new FEventUnsubscribeHandler<TArg1, TArg2, TArg3>(ref _invokationList, ref action);
         }
 
         public void RemoveListener(Action<TArg1, TArg2, TArg3> action)
         {
             _invokationList -= action;
+        }
+
+        public void Clear()
+        {
+            _invokationList = null;
         }
 
         public void Invoke(TArg1 arg1, TArg2 arg2, TArg3 arg3)

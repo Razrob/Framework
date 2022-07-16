@@ -130,6 +130,22 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2129821042031257405, guid: 0a8893255c3e38e40a1f835830d2a43c, type: 3}
+      propertyPath: _initializationMethod
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2129821042031257405, guid: 0a8893255c3e38e40a1f835830d2a43c, type: 3}
+      propertyPath: _entityBinders.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2129821042031257405, guid: 0a8893255c3e38e40a1f835830d2a43c, type: 3}
+      propertyPath: _entityBinders.Array.data[0]._typeName
+      value: EntityBinder
+      objectReference: {fileID: 0}
+    - target: {fileID: 2129821042031257405, guid: 0a8893255c3e38e40a1f835830d2a43c, type: 3}
+      propertyPath: _entityBinders.Array.data[0]._assemblyName
+      value: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+      objectReference: {fileID: 0}
     - target: {fileID: 8296130790843035664, guid: 0a8893255c3e38e40a1f835830d2a43c, type: 3}
       propertyPath: m_RootOrder
       value: 2
@@ -178,6 +194,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Entity
       objectReference: {fileID: 0}
+    - target: {fileID: 8296130790843035666, guid: 0a8893255c3e38e40a1f835830d2a43c, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0a8893255c3e38e40a1f835830d2a43c, type: 3}
 --- !u!1 &1292421535
@@ -212,6 +232,7 @@ MonoBehaviour:
   _statesEnum:
     _typeName: State
     _assemblyName: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  _modelsToInitializeIntermediate: []
   _injections:
   - {fileID: 8296130790843035666, guid: 0a8893255c3e38e40a1f835830d2a43c, type: 3}
 --- !u!4 &1292421538

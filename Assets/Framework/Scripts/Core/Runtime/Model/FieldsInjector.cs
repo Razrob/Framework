@@ -49,7 +49,6 @@ namespace Framework.Core.Runtime
         {
             foreach (Type modelType in _internalModelInjector.Models.Keys)
             {
-                //InjectToModel(_internalModelInjector.Models[modelType]);
                 ScanAndTryInjectToModelsCollections(_internalModelInjector.Models[modelType]);
             }
         }

@@ -1,6 +1,7 @@
 using System.Collections;
 using System;
 using System.Reflection;
+using System.Collections.Generic;
 
 namespace Framework.Core.Runtime
 {
@@ -9,10 +10,9 @@ namespace Framework.Core.Runtime
         private readonly FComponentsRepository _componentsRepository;
 
         private readonly FEvent<FEntity> _onFEntityRegister = new FEvent<FEntity>();
-        private readonly FEvent<FComponent> _onFComponentRegister = new FEvent<FComponent>();
+        private readonly Dictionary<Type, FEvent<FComponent>> _fComponentRegisterEvents = new Dictionary<Type, FEvent<FComponent>>();
 
         internal IEventListener<FEntity> OnFEntityRegister => _onFEntityRegister;
-        internal IEventListener<FComponent> OnFComponentRegister => _onFComponentRegister;
 
         internal FEntityRegister(out FComponentsRepository componentsRepository)
         {
@@ -41,7 +41,7 @@ namespace Framework.Core.Runtime
             foreach (FComponent component in entity.FComponents.Values)
             {
                 onAttachMethodInfo.Invoke(component, new object[] { entity });
-                _onFComponentRegister.Invoke(component);
+                OnFComponentRegister(component);
             }
 
             _onFEntityRegister.Invoke(entity);
@@ -63,6 +63,22 @@ namespace Framework.Core.Runtime
 
                 onDetachMethodInfo.Invoke(component, new object[] { entity });
             }
+        }
+
+        internal FEvent<FComponent> GetFComponentRegisterEvent<TFComponent>()
+        {
+            if(_fComponentRegisterEvents.TryGetValue(typeof(TFComponent), out FEvent<FComponent> fEvent))
+                return fEvent;
+
+            FEvent<FComponent> @event = new FEvent<FComponent>();
+            _fComponentRegisterEvents.Add(typeof(TFComponent), @event);
+            return @event;
+        }
+
+        private void OnFComponentRegister(FComponent component)
+        {
+            if (_fComponentRegisterEvents.TryGetValue(component.FComponentType, out FEvent<FComponent> fEvent))
+                fEvent.Invoke(component);
         }
 
         private IEnumerator DestroyEntityProvider(FEntityProvider entityProvider)

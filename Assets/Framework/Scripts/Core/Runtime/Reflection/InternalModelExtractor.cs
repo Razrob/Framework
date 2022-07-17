@@ -12,11 +12,11 @@ namespace Framework.Core.Runtime
         private static readonly Type InternalModelType = typeof(InternalModel);
         private const string OnInjectMethodName = "OnInject";
 
-        internal static IEnumerable<FieldInfo> GetInternalModelData(Type systemType)
+        internal static IEnumerable<FieldInfo> GetInternalModelData(Type systemType, bool withAttributeOnly = true)
         {
             IEnumerable<FieldInfo> fields = systemType.GetFields(ModelFlags)
                 .Where(field => field.GetCustomAttribute(typeof(InjectModelAttribute)) != null 
-                && field.FieldType.GetCustomAttribute<InternalModelAttribute>() != null);
+                && field.FieldType.GetCustomAttribute<InternalModelAttribute>() != null || !withAttributeOnly);
 
             if (systemType.BaseType is null)
                 return fields;

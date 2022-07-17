@@ -53,19 +53,30 @@ namespace Framework.Core.Runtime
             }
         }
 
-        private void InjectToModel(object model)
+        private void InjectToModel(object model) => InjectToModel(model, true);
+        private void InjectToModel(object model, bool withAttributeOnly)
         {
-            foreach (FieldInfo injectionField in InjectionsExtractor.GetInjectionsData(model.GetType()))
-                if(_injections.ContainsKey(injectionField.FieldType))
+            foreach (FieldInfo injectionField in InjectionsExtractor.GetInjectionsData(model.GetType(), withAttributeOnly))
+                if (_injections.ContainsKey(injectionField.FieldType))
                     injectionField.SetValue(model, _injections[injectionField.FieldType]);
         }
+
+
+
         private void ScanAndTryInjectToModelsCollections(object @object)
         {
+            if (@object is null)
+                return;
+
             Type type = @object.GetType();
+
             IEnumerable<FieldInfo> modelsCollectionsFields = InternalModelExtractor.GetModelsCollections(type);
 
-            if (type.IsSubclassOf(typeof(InternalModel)))
-                InjectToModel(@object);
+            if(type.IsSubclassOf(typeof(InternalModel)))
+                InjectToModel(@object, false);
+
+            foreach (FieldInfo field in FieldsExtractor.GetTargetFields(type))
+                ScanAndTryInjectToModelsCollections(field.GetValue(@object));
 
             foreach (FieldInfo modelsCollectionsField in modelsCollectionsFields)
             {

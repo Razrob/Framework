@@ -39,7 +39,14 @@ namespace Framework.Core.Runtime
         private void CreateModelIntermediate(IReadOnlyList<Type> modelsToInitializeIntermediate)
         {
             foreach (Type modelType in modelsToInitializeIntermediate)
-                _models.Add(modelType, (InternalModel)Activator.CreateInstance(modelType));
+            {
+                InternalModel value = DataLoader.Load(FormFileName(modelType), modelType) as InternalModel;
+
+                if (value is null)
+                    value = (InternalModel)Activator.CreateInstance(modelType);
+
+                _models.Add(modelType, value);
+            }
         }
 
         private void InjectModel(SystemModule systemModule)
@@ -147,11 +154,17 @@ namespace Framework.Core.Runtime
 
         private void ScanAndTryCallInjectMethod(object @object)
         {
+            if (@object is null)
+                return;
+
             Type type = @object.GetType();
             IEnumerable<FieldInfo> modelsCollectionsFields = InternalModelExtractor.GetModelsCollections(type);
 
             if (type.IsSubclassOf(typeof(InternalModel)) && !_models.ContainsKey(type))
                 _onInjectMethodInfo.Invoke(@object, null);
+
+            foreach (FieldInfo field in FieldsExtractor.GetTargetFields(type))
+                ScanAndTryCallInjectMethod(field.GetValue(@object));
 
             foreach (FieldInfo modelsCollectionsField in modelsCollectionsFields)
             {

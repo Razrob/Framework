@@ -9,15 +9,15 @@ namespace Framework.Core.Runtime
     {
         private static readonly BindingFlags InjectionFlags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public;
 
-        internal static IEnumerable<FieldInfo> GetInjectionsData(Type systemType, bool withAttributeOnly = true)
+        internal static IEnumerable<FieldInfo> GetInjectionsData(Type type)
         {
-            IEnumerable<FieldInfo> fields = systemType.GetFields(InjectionFlags)
-                .Where(field => field.GetCustomAttribute(typeof(InjectFieldAttribute)) != null || !withAttributeOnly);
+            IEnumerable<FieldInfo> fields = type.GetFields(InjectionFlags)
+                .Where(field => field.GetCustomAttribute(typeof(InjectFieldAttribute)) != null);
 
-            if (systemType.BaseType is null)
+            if (type.BaseType is null)
                 return fields;
 
-            return fields.Concat(GetInjectionsData(systemType.BaseType));
+            return fields.Concat(GetInjectionsData(type.BaseType));
         }
     }
 }

@@ -26,7 +26,7 @@ namespace Framework.Core.Runtime
             InjectToModel();
 
             systemRegister.OnModuleRegister += InjectToSystems;
-            _internalModelInjector.OnModelCreate += ScanAndTryInjectToModelsCollections;
+            _internalModelInjector.OnModelCreate += InjectToModel;
         }
 
         private void InjectToSystems(SystemModule systemModule)
@@ -43,10 +43,8 @@ namespace Framework.Core.Runtime
 
         private void InjectToModel()
         {
-            foreach (Type modelType in _internalModelInjector.Models.Keys)
-            {
-                ScanAndTryInjectToModelsCollections(_internalModelInjector.Models[modelType]);
-            }
+            foreach (InternalModel model in _internalModelInjector.AllModels)
+                InjectToModel(model);
         }
 
         private void InjectToModel(object model)
@@ -54,26 +52,6 @@ namespace Framework.Core.Runtime
             foreach(FieldInfo selectorField in ComponentSelectorExtractor.GetSelectors(model.GetType()))
                 selectorField.SetValue(model, Activator.CreateInstance(selectorField.FieldType,
                     ConstructorFlags, null, new object[] { _componentsRepository }, null));
-        }
-
-        private void ScanAndTryInjectToModelsCollections(object @object)
-        {
-            Type type = @object.GetType();
-            IEnumerable<FieldInfo> modelsCollectionsFields = InternalModelExtractor.GetModelsCollections(type);
-
-            if(type.IsSubclassOf(typeof(InternalModel)))
-                InjectToModel(@object);
-
-            foreach(FieldInfo modelsCollectionsField in modelsCollectionsFields)
-            {
-                IEnumerable collection = modelsCollectionsField.GetValue(@object) as IEnumerable;
-
-                if (collection is null)
-                    continue;
-
-                foreach (object element in collection)
-                    ScanAndTryInjectToModelsCollections(element);
-            }
         }
 
         public void OnBootLoadComplete() { }

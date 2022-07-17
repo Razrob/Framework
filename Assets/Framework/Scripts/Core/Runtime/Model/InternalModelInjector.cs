@@ -8,20 +8,23 @@ namespace Framework.Core.Runtime
 {
     internal class InternalModelInjector : IBootLoadElement
     {
-        private readonly Dictionary<Type, InternalModel> _models;
+        private readonly Dictionary<Type, InternalModel> _singleModels;
+        private readonly HashSet<InternalModel> _allModels;
         private readonly SystemRegister _systemRegister;
 
         private readonly MethodInfo _onInjectMethodInfo;
 
         private const string SaveDirectory = "InternalModel";
 
-        internal IReadOnlyDictionary<Type, InternalModel> Models => _models;
+        internal IReadOnlyDictionary<Type, InternalModel> SingleModels => _singleModels;
+        internal IEnumerable<InternalModel> AllModels => _allModels;
 
         internal event FrameworkDelegate<InternalModel> OnModelCreate;
 
         internal InternalModelInjector(IReadOnlyList<Type> modelsToInitializeIntermediate = null)
         {
-            _models = new Dictionary<Type, InternalModel>();
+            _singleModels = new Dictionary<Type, InternalModel>();
+            _allModels = new HashSet<InternalModel>();
             _systemRegister = LoadElementAdapter<SystemRegister>.Instance;
 
             _onInjectMethodInfo = InternalModelExtractor.GetOnInjectMethodInfo();
@@ -45,7 +48,10 @@ namespace Framework.Core.Runtime
                 if (value is null)
                     value = (InternalModel)Activator.CreateInstance(modelType);
 
-                _models.Add(modelType, value);
+                _singleModels.Add(modelType, value);
+
+                foreach (InternalModel model in InternalModelExtractor.GetAllModels(new InternalModel[] { value }))
+                    _allModels.Add(model);
             }
         }
 
@@ -65,7 +71,7 @@ namespace Framework.Core.Runtime
             InjectModel(field, declaredOnject);
 
             foreach (FieldInfo sytemExcludedModelField in InternalModelExtractor.GetInternalModelData(field.FieldType))
-                ScanAndInjectInternalModelTypes(sytemExcludedModelField, _models[field.FieldType]);
+                ScanAndInjectInternalModelTypes(sytemExcludedModelField, _singleModels[field.FieldType]);
         }
 
         private void InjectModel(FieldInfo modelField, object declaredObject)
@@ -73,9 +79,9 @@ namespace Framework.Core.Runtime
             if (!ModelTypeIsValid(modelField.FieldType))
                 return;
 
-            if (_models.ContainsKey(modelField.FieldType))
+            if (_singleModels.ContainsKey(modelField.FieldType))
             {
-                modelField.SetValue(declaredObject, _models[modelField.FieldType]);
+                modelField.SetValue(declaredObject, _singleModels[modelField.FieldType]);
             }
             else
             {
@@ -84,8 +90,12 @@ namespace Framework.Core.Runtime
                 if (value is null)
                     value = Activator.CreateInstance(modelField.FieldType) as InternalModel;
 
-                _models.Add(modelField.FieldType, value);
-                modelField.SetValue(declaredObject, _models[modelField.FieldType]);
+                _singleModels.Add(modelField.FieldType, value);
+
+                foreach (InternalModel model in InternalModelExtractor.GetAllModels(new InternalModel[] { value }))
+                    _allModels.Add(model);
+
+                modelField.SetValue(declaredObject, _singleModels[modelField.FieldType]);
                 OnModelCreate?.Invoke(value);
             }
         }
@@ -118,7 +128,7 @@ namespace Framework.Core.Runtime
                         if (targetModelType != null && field.FieldType != targetModelType)
                             return;
 
-                        ScanAndSaveModelTypes(field, _models[field.FieldType], ref savedTypes);
+                        ScanAndSaveModelTypes(field, _singleModels[field.FieldType], ref savedTypes);
                     }
                 }
             }
@@ -129,7 +139,7 @@ namespace Framework.Core.Runtime
             SaveModelType(fieldInfo, @object, ref savedTypes);
             
             foreach (FieldInfo sytemExcludedModelField in InternalModelExtractor.GetInternalModelData(fieldInfo.FieldType))
-                ScanAndSaveModelTypes(sytemExcludedModelField, _models[sytemExcludedModelField.FieldType], ref savedTypes);
+                ScanAndSaveModelTypes(sytemExcludedModelField, _singleModels[sytemExcludedModelField.FieldType], ref savedTypes);
         }
 
         private void SaveModelType(FieldInfo fieldInfo, object declaredObject, ref HashSet<Type> savedTypes)
@@ -145,37 +155,8 @@ namespace Framework.Core.Runtime
 
         public void OnBootLoadComplete() 
         {
-            foreach (InternalModel model in _models.Values)
-            {
+            foreach (InternalModel model in _allModels)
                 _onInjectMethodInfo.Invoke(model, null);
-                ScanAndTryCallInjectMethod(model);
-            }
-        }
-
-        private void ScanAndTryCallInjectMethod(object @object)
-        {
-            if (@object is null)
-                return;
-
-            Type type = @object.GetType();
-            IEnumerable<FieldInfo> modelsCollectionsFields = InternalModelExtractor.GetModelsCollections(type);
-
-            if (type.IsSubclassOf(typeof(InternalModel)) && !_models.ContainsKey(type))
-                _onInjectMethodInfo.Invoke(@object, null);
-
-            foreach (FieldInfo field in FieldsExtractor.GetTargetFields(type))
-                ScanAndTryCallInjectMethod(field.GetValue(@object));
-
-            foreach (FieldInfo modelsCollectionsField in modelsCollectionsFields)
-            {
-                IEnumerable collection = modelsCollectionsField.GetValue(@object) as IEnumerable;
-
-                if (collection is null)
-                    continue;
-
-                foreach (object element in collection)
-                    ScanAndTryCallInjectMethod(element);
-            }
         }
     }
 }

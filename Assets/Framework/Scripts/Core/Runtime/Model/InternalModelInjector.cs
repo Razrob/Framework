@@ -79,6 +79,9 @@ namespace Framework.Core.Runtime
             if (!ModelTypeIsValid(modelField.FieldType))
                 return;
 
+            if (modelField.GetValue(declaredObject) != null)
+                return;
+
             if (_singleModels.ContainsKey(modelField.FieldType))
             {
                 modelField.SetValue(declaredObject, _singleModels[modelField.FieldType]);
@@ -146,7 +149,7 @@ namespace Framework.Core.Runtime
         {
             InternalModelAttribute modelAttribute = fieldInfo.FieldType.GetCustomAttribute<InternalModelAttribute>();
 
-            if (!modelAttribute.SaveAllow || savedTypes.Contains(fieldInfo.FieldType))
+            if (!modelAttribute.SaveAllow || !modelAttribute.IsSingle || savedTypes.Contains(fieldInfo.FieldType))
                 return;
 
             savedTypes.Add(fieldInfo.FieldType);

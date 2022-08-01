@@ -47,9 +47,6 @@ namespace Framework.Core.Runtime
         {
             Type type = @object.GetType();
 
-            //if (!excludedTypes.Add(type))
-            //    return;
-
             if (type.IsSubclassOf(typeof(InternalModel)))
                 if (!models.Add((InternalModel)@object))
                     return;

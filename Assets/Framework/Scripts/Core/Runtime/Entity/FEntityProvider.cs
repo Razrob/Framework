@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Framework.Core.Runtime
 {
-    internal class FEntityProvider : MonoBehaviour
+    public class FEntityProvider : MonoBehaviour
     {
         [SerializeField] private InitializationMethod _initializationMethod;
         [SerializeReference] private FComponentProvider[] _componentProviders;
@@ -17,7 +17,7 @@ namespace Framework.Core.Runtime
 
         internal IReadOnlyList<FComponentProvider> ComponentProviders => _componentProviders;
         internal IEnumerable<Type> BindersTypes => _entityBinders.Select(binder => binder.Type);
-        internal readonly FEntity InstantiatedEntity;
+        public readonly FEntity InstantiatedEntity;
 
         private void Awake() => Register(InitializationMethod.Awake);
         private void OnEnable() => Register(InitializationMethod.OnEnable); 

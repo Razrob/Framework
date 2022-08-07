@@ -3,6 +3,7 @@ using UnityEngine;
 using System;
 using System.Reflection;
 using System.Collections;
+using System.Linq;
 
 namespace Framework.Core.Runtime
 {
@@ -43,6 +44,9 @@ namespace Framework.Core.Runtime
         {
             foreach (Type modelType in modelsToInitializeIntermediate)
             {
+                if (_singleModels.ContainsKey(modelType))
+                    continue;
+
                 InternalModel value = DataLoader.Load(FormFileName(modelType), modelType) as InternalModel;
 
                 if (value is null)
@@ -51,7 +55,12 @@ namespace Framework.Core.Runtime
                 _singleModels.Add(modelType, value);
 
                 foreach (InternalModel model in InternalModelExtractor.GetAllModels(new InternalModel[] { value }))
+                {
                     _allModels.Add(model);
+
+                    foreach (FieldInfo field in InternalModelExtractor.GetInternalModelData(model.GetType()))
+                        InjectModel(field, model);
+                }
             }
         }
 
@@ -96,7 +105,12 @@ namespace Framework.Core.Runtime
                 _singleModels.Add(modelField.FieldType, value);
 
                 foreach (InternalModel model in InternalModelExtractor.GetAllModels(new InternalModel[] { value }))
+                {
                     _allModels.Add(model);
+
+                    foreach (FieldInfo field in InternalModelExtractor.GetInternalModelData(model.GetType()))
+                        InjectModel(field, model);
+                }
 
                 modelField.SetValue(declaredObject, _singleModels[modelField.FieldType]);
                 OnModelCreate?.Invoke(value);

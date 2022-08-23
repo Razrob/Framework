@@ -7,7 +7,16 @@ namespace Framework.Core.Editor
     internal class DllNamesFinder
     {
         private static List<Assembly> _solutionDlls;
-        internal static IReadOnlyList<Assembly> SolutionDlls => _solutionDlls;
+        internal static IReadOnlyList<Assembly> SolutionDlls
+        {
+            get
+            {
+                if (_solutionDlls is null || _solutionDlls.Count is 0)
+                    OnRecompile();
+
+                return _solutionDlls;
+            }
+        }
 
         [InitializeOnLoadMethod]
         private static void OnRecompile()
